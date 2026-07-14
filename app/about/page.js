@@ -19,6 +19,9 @@ export default async function AboutPage() {
       <Header settings={settings} />
       <main className="ve-simple-page">
         <h1>About Us</h1>
+        {settings.about_image_url && (
+          <img src={settings.about_image_url} alt="" className="ve-about-image" />
+        )}
         <p className="ve-about-text">{settings.about_us_text}</p>
         {waNumber && (
           <a className="ve-btn ve-btn-primary ve-whatsapp-btn" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">

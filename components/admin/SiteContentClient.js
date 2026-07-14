@@ -32,13 +32,16 @@ export default function SiteContentClient({ settings }) {
     accent_color: settings.accent_color || "#1B3A6B",
     footer_catalog_heading: settings.footer_catalog_heading || "",
     footer_catalog_text: settings.footer_catalog_text || "",
-    footer_copyright: settings.footer_copyright || ""
+    footer_copyright: settings.footer_copyright || "",
+    about_image_url: settings.about_image_url || ""
   });
   const [banners, setBanners] = useState(settings.banner_images || []);
   const [savingText, setSavingText] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingAbout, setUploadingAbout] = useState(false);
   const [uploadingBanner, setUploadingBanner] = useState(false);
   const logoRef = useRef(null);
+  const aboutImgRef = useRef(null);
   const bannerRef = useRef(null);
   const router = useRouter();
 
@@ -71,6 +74,21 @@ export default function SiteContentClient({ settings }) {
       alert("Could not upload logo: " + err.message);
     }
     setUploadingLogo(false);
+  }
+
+  async function handleAboutImageFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingAbout(true);
+    try {
+      const url = await uploadToSiteAssets(file, "about");
+      update("about_image_url", url);
+      await updateSiteContent({ about_image_url: url });
+      router.refresh();
+    } catch (err) {
+      alert("Could not upload image: " + err.message);
+    }
+    setUploadingAbout(false);
   }
 
   async function handleBannerFile(e) {
@@ -152,6 +170,16 @@ export default function SiteContentClient({ settings }) {
         </div>
         <label className="ve-filter-label">About Us page text</label>
         <textarea rows={4} value={form.about_us_text} onChange={(e) => update("about_us_text", e.target.value)} />
+        <label className="ve-filter-label">About Us page image (shown above the text)</label>
+        <div className="ve-logo-upload-row">
+          <div className="ve-logo-preview" onClick={() => aboutImgRef.current?.click()}>
+            {form.about_image_url ? <img src={form.about_image_url} alt="" /> : <Upload size={18} />}
+          </div>
+          <button type="button" className="ve-btn ve-btn-ghost ve-btn-sm" onClick={() => aboutImgRef.current?.click()} disabled={uploadingAbout}>
+            {uploadingAbout ? "Uploading..." : form.about_image_url ? "Replace image" : "Upload image"}
+          </button>
+          <input ref={aboutImgRef} type="file" accept="image/*" hidden onChange={handleAboutImageFile} />
+        </div>
 
         <h3 style={{ marginTop: 20 }}>Contact details</h3>
         <label className="ve-filter-label">Contact email (also used for the Contact form and product enquiries)</label>

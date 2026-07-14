@@ -177,7 +177,7 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-badge-warning{ background:var(--warn-bg); color:var(--warn-fg); }
 
 .ve-footer{ background:var(--graphite); color:#D6D9D6; margin-top:20px; }
-.ve-footer-grid{ max-width:1200px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:30px; }
+.ve-footer-grid{ max-width:1200px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:repeat(3, 1fr); gap:30px; }
 .ve-footer h4{ color:#fff; font-family:'Oswald',sans-serif; font-size:14px; margin-bottom:8px; letter-spacing:.3px; }
 .ve-footer .ve-muted{ color:#9BA1A0; font-size:13px; line-height:1.6; }
 .ve-footer-whatsapp{ display:inline-flex; align-items:center; gap:5px; color:#25D366; text-decoration:none; }
@@ -197,6 +197,7 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-simple-page{ max-width:900px; margin:0 auto; padding:40px 24px 70px; }
 .ve-simple-page h1{ font-family:'Oswald',sans-serif; font-size:30px; margin-bottom:8px; }
 .ve-about-text{ color:var(--steel); font-size:15.5px; line-height:1.75; margin:18px 0 26px; white-space:pre-line; }
+.ve-about-image{ width:100%; max-height:360px; object-fit:cover; border-radius:var(--radius); margin-top:16px; }
 .ve-whatsapp-btn{ background:#25D366; border-color:#25D366; }
 .ve-whatsapp-btn:hover{ background:#1ebc59; }
 
