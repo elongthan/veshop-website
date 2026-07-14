@@ -2,7 +2,6 @@ import { MessageCircle } from "lucide-react";
 
 export default function Footer({ settings }) {
   const siteName = settings?.site_name || "VESHOP";
-  const tagline = settings?.site_tagline || "Vertex Enterprise catalog";
   const address = settings?.footer_address || "";
   const phone1 = settings?.phone1 || "";
   const phone2 = settings?.phone2 || "";
@@ -15,7 +14,6 @@ export default function Footer({ settings }) {
         <div>
           <div className="ve-logo-text" style={{ marginBottom: 10 }}>
             <strong>{siteName}</strong>
-            <em>{tagline}</em>
           </div>
           <p className="ve-muted" style={{ whiteSpace: "pre-line" }}>{address}</p>
         </div>

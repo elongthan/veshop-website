@@ -14,7 +14,6 @@ export default function Header({ settings }) {
   }
 
   const siteName = settings?.site_name || "VESHOP";
-  const tagline = settings?.site_tagline || "Vertex Enterprise catalog";
 
   return (
     <header className="ve-header">
@@ -28,7 +27,6 @@ export default function Header({ settings }) {
           )}
           <span className="ve-logo-text">
             <strong>{siteName}</strong>
-            <em>{tagline}</em>
           </span>
         </Link>
         <nav className="ve-nav">

@@ -164,6 +164,8 @@ form.ve-settings h3:first-child{ margin-top:0; }
 form.ve-settings > label{ margin-top:12px; }
 form.ve-settings > label:first-of-type{ margin-top:4px; }
 form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
+.ve-color-row{ display:flex; gap:8px; align-items:center; margin-top:4px; }
+.ve-color-row input[type=color]{ width:44px; height:38px; padding:2px; border:1px solid var(--line); border-radius:6px; cursor:pointer; }
 .ve-settings h2{ font-family:'Oswald',sans-serif; font-size:19px; margin-bottom:16px; }
 .ve-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px 0; border-top:1px solid var(--line); }
 .ve-toggle{ width:46px; height:26px; border-radius:20px; background:#D8D8D0; border:none; cursor:pointer; position:relative; flex-shrink:0; }

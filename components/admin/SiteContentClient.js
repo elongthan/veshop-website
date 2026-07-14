@@ -28,7 +28,8 @@ export default function SiteContentClient({ settings }) {
     whatsapp_number: settings.whatsapp_number || "",
     contact_email: settings.contact_email || "",
     about_us_text: settings.about_us_text || "",
-    logo_url: settings.logo_url || ""
+    logo_url: settings.logo_url || "",
+    accent_color: settings.accent_color || "#1B3A6B"
   });
   const [banners, setBanners] = useState(settings.banner_images || []);
   const [savingText, setSavingText] = useState(false);
@@ -141,6 +142,11 @@ export default function SiteContentClient({ settings }) {
         <textarea rows={2} value={form.hero_title} onChange={(e) => update("hero_title", e.target.value)} />
         <label className="ve-filter-label">Homepage description</label>
         <textarea rows={3} value={form.hero_description} onChange={(e) => update("hero_description", e.target.value)} />
+        <label className="ve-filter-label">Accent colour (links, highlights)</label>
+        <div className="ve-color-row">
+          <input type="color" value={form.accent_color} onChange={(e) => update("accent_color", e.target.value)} />
+          <input value={form.accent_color} onChange={(e) => update("accent_color", e.target.value)} style={{ maxWidth: 120 }} />
+        </div>
         <label className="ve-filter-label">About Us page text</label>
         <textarea rows={4} value={form.about_us_text} onChange={(e) => update("about_us_text", e.target.value)} />
 

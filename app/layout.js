@@ -1,4 +1,5 @@
 import "./globals.css";
+import { getSettings } from "@/lib/data";
 
 export const metadata = {
   metadataBase: new URL("https://veshop.com.sg"),
@@ -18,10 +19,18 @@ export const metadata = {
   }
 };
 
-export default function RootLayout({ children }) {
+export const dynamic = "force-dynamic";
+
+export default async function RootLayout({ children }) {
+  const settings = await getSettings();
+  const accentColor = settings?.accent_color || "#1B3A6B";
+
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <style>{`:root{ --signal: ${accentColor}; }`}</style>
+        {children}
+      </body>
     </html>
   );
 }
