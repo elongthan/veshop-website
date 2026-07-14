@@ -33,9 +33,8 @@ export default function Header({ settings }) {
         </Link>
         <nav className="ve-nav">
           <Link href="/">Home</Link>
-          <Link href="/shop">Full catalog</Link>
-          <Link href="/about">About</Link>
-          <Link href="/contact">Contact</Link>
+          <Link href="/about">About Us</Link>
+          <Link href="/contact">Contact Us</Link>
         </nav>
         <form className="ve-search" onSubmit={onSearch}>
           <Search size={16} />
