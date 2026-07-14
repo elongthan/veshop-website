@@ -29,7 +29,10 @@ export default function SiteContentClient({ settings }) {
     contact_email: settings.contact_email || "",
     about_us_text: settings.about_us_text || "",
     logo_url: settings.logo_url || "",
-    accent_color: settings.accent_color || "#1B3A6B"
+    accent_color: settings.accent_color || "#1B3A6B",
+    footer_catalog_heading: settings.footer_catalog_heading || "",
+    footer_catalog_text: settings.footer_catalog_text || "",
+    footer_copyright: settings.footer_copyright || ""
   });
   const [banners, setBanners] = useState(settings.banner_images || []);
   const [savingText, setSavingText] = useState(false);
@@ -167,6 +170,14 @@ export default function SiteContentClient({ settings }) {
         <input value={form.whatsapp_number} onChange={(e) => update("whatsapp_number", e.target.value)} />
         <label className="ve-filter-label">Address</label>
         <textarea rows={3} value={form.footer_address} onChange={(e) => update("footer_address", e.target.value)} />
+
+        <h3 style={{ marginTop: 20 }}>Footer "Catalog" column</h3>
+        <label className="ve-filter-label">Heading</label>
+        <input value={form.footer_catalog_heading} onChange={(e) => update("footer_catalog_heading", e.target.value)} />
+        <label className="ve-filter-label">Text</label>
+        <textarea rows={2} value={form.footer_catalog_text} onChange={(e) => update("footer_catalog_text", e.target.value)} />
+        <label className="ve-filter-label">Copyright line (year is added automatically)</label>
+        <input value={form.footer_copyright} onChange={(e) => update("footer_copyright", e.target.value)} />
 
         <div className="ve-form-actions">
           <button className="ve-btn ve-btn-primary" type="submit" disabled={savingText}>

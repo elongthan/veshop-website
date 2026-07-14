@@ -36,7 +36,7 @@ export default function Header({ settings }) {
         </nav>
         <form className="ve-search" onSubmit={onSearch}>
           <Search size={16} />
-          <input name="q" placeholder="Search products, SKU, brand, keyword..." />
+          <input name="q" placeholder="Search products, brands, SKU..." />
         </form>
       </div>
     </header>
