@@ -15,9 +15,7 @@ export default function Footer({ settings }) {
     <footer className="ve-footer">
       <div className="ve-footer-grid">
         <div>
-          <div className="ve-logo-text" style={{ marginBottom: 10 }}>
-            <strong>{siteName}</strong>
-          </div>
+          <h4>{siteName}</h4>
           <p className="ve-muted" style={{ whiteSpace: "pre-line" }}>{address}</p>
         </div>
         <div>
