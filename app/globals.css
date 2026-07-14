@@ -158,6 +158,12 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-tax-item button{ background:none; border:none; cursor:pointer; color:var(--muted); }
 
 .ve-settings{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:24px; }
+form.ve-settings{ display:flex; flex-direction:column; }
+form.ve-settings h3{ margin-top:22px; }
+form.ve-settings h3:first-child{ margin-top:0; }
+form.ve-settings > label{ margin-top:12px; }
+form.ve-settings > label:first-of-type{ margin-top:4px; }
+form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-settings h2{ font-family:'Oswald',sans-serif; font-size:19px; margin-bottom:16px; }
 .ve-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px 0; border-top:1px solid var(--line); }
 .ve-toggle{ width:46px; height:26px; border-radius:20px; background:#D8D8D0; border:none; cursor:pointer; position:relative; flex-shrink:0; }
