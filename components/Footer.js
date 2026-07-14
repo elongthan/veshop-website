@@ -1,3 +1,5 @@
+import { MessageCircle } from "lucide-react";
+
 export default function Footer({ settings }) {
   const siteName = settings?.site_name || "VESHOP";
   const tagline = settings?.site_tagline || "Vertex Enterprise catalog";
@@ -5,6 +7,7 @@ export default function Footer({ settings }) {
   const phone1 = settings?.phone1 || "";
   const phone2 = settings?.phone2 || "";
   const email = settings?.contact_email || "sales@veshop.com.sg";
+  const waNumber = (settings?.whatsapp_number || "").replace(/[^0-9]/g, "");
 
   return (
     <footer className="ve-footer">
@@ -19,7 +22,14 @@ export default function Footer({ settings }) {
         <div>
           <h4>Get in touch</h4>
           <p className="ve-muted">
-            {phone1}{phone2 ? <><br />{phone2}</> : null}<br />
+            {waNumber ? (
+              <a className="ve-footer-whatsapp" href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={14} /> {phone1}
+              </a>
+            ) : (
+              phone1
+            )}
+            {phone2 ? <><br />{phone2}</> : null}<br />
             {email}
           </p>
         </div>
