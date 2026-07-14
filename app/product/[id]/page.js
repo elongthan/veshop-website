@@ -48,7 +48,7 @@ export default async function ProductPage({ params }) {
 
   return (
     <>
-      <Header />
+      <Header settings={settings} />
       <main className="ve-product-page">
         <div className="ve-breadcrumb">
           <Link href="/">Home</Link> / {product.category && (
@@ -79,22 +79,17 @@ export default async function ProductPage({ params }) {
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
             )}
             <p className="ve-product-desc">{product.short_description}</p>
-            {product.tags?.length > 0 && (
-              <div className="ve-tag-row">
-                {product.tags.map((t) => <span key={t} className="ve-tag-chip">{t}</span>)}
-              </div>
-            )}
             <a
               className="ve-btn ve-btn-primary"
               style={{ marginTop: 16 }}
-              href={`mailto:sales@veshop.com.sg?subject=Enquiry: ${encodeURIComponent(product.name)}`}
+              href={`mailto:${settings.contact_email || "sales@veshop.com.sg"}?subject=Enquiry: ${encodeURIComponent(product.name)}`}
             >
               Enquire about this item
             </a>
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer settings={settings} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

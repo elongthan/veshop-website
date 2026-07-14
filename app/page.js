@@ -2,6 +2,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import BannerCarousel from "@/components/BannerCarousel";
 import { getCategories, getProducts, getSettings } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 
@@ -17,16 +18,15 @@ export default async function HomePage() {
 
   return (
     <>
-      <Header />
+      <Header settings={settings} />
       <main>
+        {settings.banner_images?.length > 0 && <BannerCarousel images={settings.banner_images} />}
+
         <section className="ve-hero">
           <div className="ve-hero-copy">
-            <span className="ve-eyebrow">Vertex Enterprise Pte Ltd</span>
-            <h1>Hardware, PPE and safety supplies — browse the full catalog</h1>
-            <p>
-              Search by name, brand or price, filter by category, and download a PDF catalog
-              for procurement or site reference. Contact our team for quotes and orders.
-            </p>
+            <span className="ve-eyebrow">{settings.hero_eyebrow}</span>
+            <h1>{settings.hero_title}</h1>
+            <p>{settings.hero_description}</p>
             <div className="ve-hero-actions">
               <Link className="ve-btn ve-btn-primary" href="/shop">Browse catalog</Link>
               <a className="ve-btn ve-btn-ghost" href="#categories">View by category</a>
@@ -63,7 +63,7 @@ export default async function HomePage() {
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Lock, Package, LayoutGrid, Settings, LogOut } from "lucide-react";
+import { ArrowLeft, Lock, Package, LayoutGrid, Settings, LogOut, Image } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminSidebar() {
@@ -23,6 +23,9 @@ export default function AdminSidebar() {
       <nav className="ve-admin-nav">
         <Link className={pathname.startsWith("/admin/products") ? "active" : ""} href="/admin/products">
           <Package size={16} /> Products
+        </Link>
+        <Link className={pathname.startsWith("/admin/site-content") ? "active" : ""} href="/admin/site-content">
+          <Image size={16} /> Site content
         </Link>
         <Link className={pathname.startsWith("/admin/taxonomy") ? "active" : ""} href="/admin/taxonomy">
           <LayoutGrid size={16} /> Categories &amp; brands

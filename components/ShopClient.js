@@ -121,21 +121,6 @@ function ShopInner({ products, categories, brands, showPrices }) {
               </div>
             </div>
 
-            {allTags.length > 0 && (
-              <div className="ve-filter-block">
-                <label className="ve-filter-label">Tags</label>
-                <div className="ve-tag-row">
-                  {allTags.map((t) => (
-                    <button
-                      key={t}
-                      className={`ve-tag-chip ve-tag-toggle ${tagFilter.includes(t) ? "active" : ""}`}
-                      onClick={() => toggleTag(t)}
-                    >{t}</button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             <button className="ve-link" onClick={clearAll}>Clear all filters</button>
           </aside>
         )}

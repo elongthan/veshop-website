@@ -29,7 +29,7 @@ export default async function CategoryPage({ params }) {
 
   return (
     <>
-      <Header />
+      <Header settings={settings} />
       <main className="ve-shop">
         <div className="ve-breadcrumb">
           <Link href="/">Home</Link> / {category}
@@ -55,7 +55,7 @@ export default async function CategoryPage({ params }) {
           </div>
         )}
       </main>
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }

@@ -20,14 +20,14 @@ export default async function ShopPage() {
 
   return (
     <>
-      <Header />
+      <Header settings={settings} />
       <ShopClient
         products={products}
         categories={categories}
         brands={brands}
         showPrices={settings.show_prices}
       />
-      <Footer />
+      <Footer settings={settings} />
     </>
   );
 }

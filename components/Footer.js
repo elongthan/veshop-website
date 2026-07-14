@@ -1,21 +1,27 @@
-export default function Footer() {
+export default function Footer({ settings }) {
+  const siteName = settings?.site_name || "VESHOP";
+  const tagline = settings?.site_tagline || "Vertex Enterprise catalog";
+  const address = settings?.footer_address || "";
+  const phone1 = settings?.phone1 || "";
+  const phone2 = settings?.phone2 || "";
+  const email = settings?.contact_email || "sales@veshop.com.sg";
+
   return (
     <footer className="ve-footer">
       <div className="ve-footer-grid">
         <div>
           <div className="ve-logo-text" style={{ marginBottom: 10 }}>
-            <strong>VESHOP</strong>
-            <em>Vertex Enterprise catalog</em>
+            <strong>{siteName}</strong>
+            <em>{tagline}</em>
           </div>
-          <p className="ve-muted">
-            9003 Tampines Street 93, #03-158<br />
-            Tampines Industrial Park A<br />
-            Singapore 528837
-          </p>
+          <p className="ve-muted" style={{ whiteSpace: "pre-line" }}>{address}</p>
         </div>
         <div>
           <h4>Get in touch</h4>
-          <p className="ve-muted">+65 8363 1218<br />+65 6980 8669<br />sales@veshop.com.sg</p>
+          <p className="ve-muted">
+            {phone1}{phone2 ? <><br />{phone2}</> : null}<br />
+            {email}
+          </p>
         </div>
         <div>
           <h4>Catalog</h4>
