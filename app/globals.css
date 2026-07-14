@@ -177,7 +177,8 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-badge-warning{ background:var(--warn-bg); color:var(--warn-fg); }
 
 .ve-footer{ background:var(--graphite); color:#D6D9D6; margin-top:20px; }
-.ve-footer-grid{ max-width:1200px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:repeat(3, 1fr); gap:30px; }
+.ve-footer-grid{ max-width:1200px; margin:0 auto; padding:40px 24px; display:flex; flex-wrap:wrap; justify-content:space-between; gap:30px; }
+.ve-footer-grid > div{ flex:0 1 300px; }
 .ve-footer h4{ color:#fff; font-family:'Oswald',sans-serif; font-size:14px; margin-bottom:8px; letter-spacing:.3px; }
 .ve-footer .ve-muted{ color:#9BA1A0; font-size:13px; line-height:1.6; }
 .ve-footer-whatsapp{ display:inline-flex; align-items:center; gap:5px; color:#25D366; text-decoration:none; }
@@ -251,7 +252,7 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
   .ve-product-page{ padding:20px 16px 50px; }
   .ve-contact-grid{ grid-template-columns:1fr; }
   .ve-simple-page{ padding:26px 16px 50px; }
-  .ve-footer-grid{ grid-template-columns:1fr; gap:24px; padding:30px 16px; }
+  .ve-footer-grid{ flex-direction:column; gap:24px; padding:30px 16px; }
   .ve-banner{ aspect-ratio:16/10; }
   .ve-banner-slide{ object-fit:contain; background:var(--graphite); }
 }
