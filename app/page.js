@@ -5,6 +5,8 @@ import ProductCard from "@/components/ProductCard";
 import { getCategories, getProducts, getSettings } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [categories, products, settings] = await Promise.all([
     getCategories(),

@@ -16,10 +16,7 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export async function generateStaticParams() {
-  const categories = await getCategories();
-  return categories.map((c) => ({ slug: slugify(c) }));
-}
+export const dynamic = "force-dynamic";
 
 export default async function CategoryPage({ params }) {
   const [categories, products, settings] = await Promise.all([

@@ -1,6 +1,8 @@
 import { getCategories, getProducts } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap() {
   const base = "https://veshop.com.sg";
   const [products, categories] = await Promise.all([getProducts(), getCategories()]);

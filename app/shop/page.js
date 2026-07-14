@@ -3,6 +3,8 @@ import Footer from "@/components/Footer";
 import ShopClient from "@/components/ShopClient";
 import { getBrands, getCategories, getProducts, getSettings } from "@/lib/data";
 
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Full catalog",
   description: "Search and filter VeShop's full range of hardware, PPE and safety supplies by name, brand, category and price."

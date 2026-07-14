@@ -6,6 +6,8 @@ import { getProduct, getSettings } from "@/lib/data";
 import { fmtPrice, slugify } from "@/lib/slug";
 import { ImageOff } from "lucide-react";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const product = await getProduct(params.id);
   if (!product) return {};
