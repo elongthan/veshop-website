@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --graphite:#1E2124; --steel:#3E4750; --paper:#EDEEE9; --paper-card:#FFFFFF;
+  --ink:#16181B; --muted:#666F76; --line:#DCDCD4;
+  --hazard:#F5B400; --signal:#E85D2C; --success:#2F7D4F; --success-bg:#E4F2E9;
+  --warn-bg:#FBEFD9; --warn-fg:#8A5A0A;
+  --radius:10px;
+}
+*{ box-sizing:border-box; }
+html,body{ padding:0; margin:0; }
+body{ font-family:'Inter',sans-serif; color:var(--ink); background:var(--paper); }
+a{ color:inherit; }
+button, input, select, textarea{ font-family:inherit; }
+
+.ve-hazard-bar{ height:5px; background:repeating-linear-gradient(45deg, var(--graphite), var(--graphite) 12px, var(--hazard) 12px, var(--hazard) 24px); }
+
+.ve-header{ background:var(--paper-card); position:sticky; top:0; z-index:20; border-bottom:1px solid var(--line); }
+.ve-header-row{ max-width:1200px; margin:0 auto; padding:14px 24px; display:flex; align-items:center; gap:28px; }
+.ve-logo{ background:none; border:none; cursor:pointer; display:flex; align-items:center; gap:10px; padding:0; text-decoration:none; }
+.ve-logo-mark{ font-family:'Oswald',sans-serif; background:var(--graphite); color:var(--hazard); font-weight:700; font-size:15px; padding:8px 9px; border-radius:6px; letter-spacing:.5px; }
+.ve-logo-text{ display:flex; flex-direction:column; text-align:left; }
+.ve-logo-text strong{ font-family:'Oswald',sans-serif; font-size:18px; letter-spacing:1px; line-height:1.1; }
+.ve-logo-text em{ font-style:normal; font-size:11px; color:var(--muted); letter-spacing:.3px; }
+.ve-nav{ display:flex; gap:4px; }
+.ve-nav a, .ve-nav button{ background:none; border:none; font-family:inherit; font-size:14px; font-weight:500; color:var(--steel); padding:9px 14px; border-radius:7px; cursor:pointer; text-decoration:none; }
+.ve-nav a:hover, .ve-nav button:hover{ background:var(--paper); }
+.ve-search{ margin-left:auto; display:flex; align-items:center; gap:8px; background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:8px 12px; min-width:260px; color:var(--muted); }
+.ve-search input{ border:none; background:none; outline:none; font-family:inherit; font-size:14px; width:100%; color:var(--ink); }
+.ve-search-inline{ min-width:0; }
+
+.ve-hero{ max-width:1200px; margin:0 auto; padding:48px 24px 40px; display:grid; grid-template-columns:1.3fr 1fr; gap:40px; align-items:center; }
+.ve-eyebrow{ font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:1px; text-transform:uppercase; color:var(--signal); font-weight:500; }
+.ve-hero h1{ font-family:'Oswald',sans-serif; font-size:40px; line-height:1.12; margin:12px 0 16px; font-weight:600; }
+.ve-hero p{ color:var(--muted); font-size:15px; line-height:1.6; max-width:52ch; }
+.ve-hero-actions{ display:flex; gap:12px; margin-top:22px; }
+.ve-hero-panel{ position:relative; background:var(--graphite); border-radius:14px; padding:32px; min-height:220px; display:flex; flex-direction:column; justify-content:flex-end; gap:14px; overflow:hidden; }
+.ve-hero-stripe{ position:absolute; top:0; right:0; width:90px; height:100%; background:repeating-linear-gradient(-45deg, var(--hazard), var(--hazard) 10px, var(--graphite) 10px, var(--graphite) 20px); opacity:.9; }
+.ve-hero-stat{ display:flex; align-items:baseline; gap:8px; color:#fff; }
+.ve-hero-stat strong{ font-family:'Oswald',sans-serif; font-size:30px; }
+.ve-hero-stat span{ color:#B8BEC2; font-size:13px; }
+
+.ve-section{ max-width:1200px; margin:0 auto; padding:36px 24px; }
+.ve-section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px; }
+.ve-section-head h2{ font-family:'Oswald',sans-serif; font-size:22px; font-weight:600; }
+
+.ve-cat-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:12px; }
+.ve-cat-tile{ background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; text-align:left; cursor:pointer; display:flex; flex-direction:column; gap:20px; font-family:inherit; font-size:14.5px; font-weight:500; transition:border-color .15s, transform .15s; text-decoration:none; color:var(--ink); }
+.ve-cat-tile:hover{ border-color:var(--signal); transform:translateY(-2px); }
+.ve-cat-index{ font-family:'IBM Plex Mono',monospace; color:var(--hazard); background:var(--graphite); width:30px; height:30px; display:flex; align-items:center; justify-content:center; border-radius:6px; font-size:12px; }
+
+.ve-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; }
+.ve-card{ background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:box-shadow .15s, transform .15s; text-decoration:none; color:var(--ink); }
+.ve-card:hover{ transform:translateY(-2px); box-shadow:0 8px 20px rgba(20,20,20,.08); }
+.ve-card-img{ position:relative; aspect-ratio:1/1; background:#F5F5F1; overflow:hidden; }
+.ve-card-img img{ width:100%; height:100%; object-fit:cover; }
+.ve-img-fallback{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#B4B7AE; }
+.ve-corner-tag{ position:absolute; top:10px; left:0; background:var(--signal); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; letter-spacing:.3px; }
+.ve-card-body{ padding:14px; display:flex; flex-direction:column; gap:4px; flex:1; }
+.ve-card-brand{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--signal); text-transform:uppercase; letter-spacing:.4px; }
+.ve-card-title{ font-size:14.5px; font-weight:600; line-height:1.3; margin:0; }
+.ve-card-desc{ font-size:12.5px; color:var(--muted); line-height:1.5; margin:2px 0 8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.ve-card-foot{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; }
+.ve-card-price{ font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:14px; }
+.ve-card-price-muted{ color:var(--muted); font-size:12.5px; font-style:italic; }
+.ve-card-sku{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:#A3A79C; }
+
+.ve-btn{ font-family:inherit; font-size:13.5px; font-weight:600; border-radius:8px; padding:10px 18px; cursor:pointer; border:1px solid var(--graphite); display:inline-flex; align-items:center; gap:7px; text-decoration:none; }
+.ve-btn-primary{ background:var(--graphite); color:#fff; }
+.ve-btn-primary:hover{ background:#000; }
+.ve-btn-ghost{ background:none; color:var(--ink); }
+.ve-btn-ghost:hover{ background:var(--paper); }
+.ve-btn-sm{ padding:7px 12px; font-size:13px; }
+.ve-link{ background:none; border:none; color:var(--signal); font-weight:600; font-size:13.5px; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:5px; font-family:inherit; text-decoration:none; }
+
+.ve-tag-row{ display:flex; flex-wrap:wrap; gap:6px; }
+.ve-tag-chip{ font-size:12px; background:var(--paper); border:1px solid var(--line); padding:5px 10px; border-radius:20px; color:var(--steel); font-family:inherit; cursor:default; }
+.ve-tag-toggle{ cursor:pointer; }
+.ve-tag-toggle.active{ background:var(--graphite); color:var(--hazard); border-color:var(--graphite); }
+
+.ve-shop{ max-width:1200px; margin:0 auto; padding:28px 24px 60px; }
+.ve-shop-toolbar{ display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:14px; margin-bottom:22px; }
+.ve-shop-toolbar h1{ font-family:'Oswald',sans-serif; font-size:26px; }
+.ve-shop-toolbar-actions{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.ve-select{ font-family:inherit; font-size:13px; padding:9px 10px; border-radius:8px; border:1px solid var(--line); background:#fff; }
+.ve-select-block{ width:100%; }
+.ve-shop-body{ display:grid; grid-template-columns:230px 1fr; gap:26px; align-items:start; }
+.ve-filters{ background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); padding:18px; position:sticky; top:88px; display:flex; flex-direction:column; gap:16px; }
+.ve-filter-block{ display:flex; flex-direction:column; gap:6px; }
+.ve-filter-label{ font-size:11.5px; text-transform:uppercase; letter-spacing:.5px; color:var(--muted); font-weight:600; }
+.ve-price-range{ display:flex; align-items:center; gap:6px; }
+.ve-price-range input{ width:0; flex:1; padding:8px; border:1px solid var(--line); border-radius:6px; font-family:inherit; font-size:13px; }
+.ve-checklist{ display:flex; flex-direction:column; gap:7px; max-height:220px; overflow:auto; }
+.ve-check{ display:flex; align-items:center; gap:8px; font-size:13.5px; cursor:pointer; }
+.ve-empty{ display:flex; flex-direction:column; align-items:center; gap:10px; color:var(--muted); padding:60px 0; text-align:center; }
+
+.ve-product-page{ max-width:1100px; margin:0 auto; padding:28px 24px 60px; }
+.ve-breadcrumb{ font-size:12.5px; color:var(--muted); margin-bottom:18px; }
+.ve-breadcrumb a{ color:var(--muted); text-decoration:none; }
+.ve-breadcrumb a:hover{ color:var(--signal); }
+.ve-product-grid{ display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+.ve-product-img{ background:#F5F5F1; border-radius:var(--radius); aspect-ratio:1/1; overflow:hidden; }
+.ve-product-img img{ width:100%; height:100%; object-fit:cover; }
+.ve-product-info h1{ font-family:'Oswald',sans-serif; font-size:26px; margin:4px 0 10px; }
+.ve-product-meta{ display:flex; gap:14px; font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
+.ve-product-price{ font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; margin:10px 0; }
+.ve-product-desc{ color:var(--steel); font-size:15px; line-height:1.65; margin-bottom:14px; }
+
+.ve-admin-login{ max-width:420px; margin:60px auto; padding:0 24px; display:flex; flex-direction:column; gap:16px; }
+.ve-back{ align-self:flex-start; }
+.ve-login-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:28px; display:flex; flex-direction:column; gap:12px; }
+.ve-login-card h2{ font-family:'Oswald',sans-serif; font-size:20px; }
+.ve-login-card input{ padding:11px 12px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:14px; }
+.ve-form-error{ color:#B23; font-size:13px; }
+.ve-hint{ font-size:12px; color:var(--muted); }
+
+.ve-admin{ display:grid; grid-template-columns:220px 1fr; min-height:100vh; }
+.ve-admin-sidebar{ background:var(--graphite); color:#fff; padding:22px 16px; display:flex; flex-direction:column; gap:22px; position:sticky; top:0; height:100vh; }
+.ve-admin-sidebar .ve-back{ color:#B8BEC2; }
+.ve-admin-brand{ display:flex; align-items:center; gap:8px; font-family:'Oswald',sans-serif; letter-spacing:.5px; color:var(--hazard); font-size:14px; }
+.ve-admin-nav{ display:flex; flex-direction:column; gap:4px; }
+.ve-admin-nav a{ display:flex; align-items:center; gap:9px; background:none; border:none; color:#CBD0D3; font-family:inherit; font-size:14px; padding:10px 12px; border-radius:8px; text-align:left; cursor:pointer; text-decoration:none; }
+.ve-admin-nav a:hover{ background:rgba(255,255,255,.06); }
+.ve-admin-nav a.active{ background:rgba(255,255,255,.1); color:#fff; }
+.ve-logout{ margin-top:auto; color:#CBD0D3; background:none; border:none; cursor:pointer; }
+.ve-admin-content{ padding:30px 34px; max-width:960px; }
+.ve-admin-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.ve-admin-head h2{ font-family:'Oswald',sans-serif; font-size:21px; }
+.ve-admin-table{ border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:#fff; }
+.ve-admin-row{ display:grid; grid-template-columns:2.2fr 1fr 1.2fr .8fr 70px; align-items:center; padding:10px 14px; border-bottom:1px solid var(--line); font-size:13.5px; gap:8px; }
+.ve-admin-row:last-child{ border-bottom:none; }
+.ve-admin-row-head{ background:var(--paper); font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); font-weight:600; }
+.ve-admin-item{ display:flex; align-items:center; gap:10px; }
+.ve-admin-item img{ width:38px; height:38px; border-radius:6px; object-fit:cover; background:var(--paper); }
+.ve-admin-item strong{ display:block; font-size:13px; }
+.ve-admin-item em{ font-style:normal; font-size:11px; color:var(--muted); font-family:'IBM Plex Mono',monospace; }
+.ve-admin-actions{ display:flex; gap:4px; justify-content:flex-end; }
+.ve-admin-actions button{ background:none; border:none; cursor:pointer; padding:6px; border-radius:6px; color:var(--steel); }
+.ve-admin-actions button:hover{ background:var(--paper); }
+
+.ve-product-form{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:22px; }
+.ve-form-grid{ display:grid; grid-template-columns:220px 1fr; gap:24px; }
+.ve-form-imgcol{ display:flex; flex-direction:column; }
+.ve-upload-box{ aspect-ratio:1/1; border:1.5px dashed var(--line); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; background:var(--paper); }
+.ve-upload-box img{ width:100%; height:100%; object-fit:cover; }
+.ve-upload-empty{ display:flex; flex-direction:column; align-items:center; gap:8px; color:var(--muted); font-size:12.5px; text-align:center; padding:10px; }
+.ve-form-fields{ display:flex; flex-direction:column; gap:12px; }
+.ve-form-fields input, .ve-form-fields select, .ve-form-fields textarea{ padding:10px 11px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13.5px; width:100%; }
+.ve-form-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.ve-inline-add{ display:flex; gap:6px; }
+.ve-inline-add input{ flex:1; padding:9px 10px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13.5px; }
+.ve-form-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:20px; }
+
+.ve-taxonomy{ display:grid; grid-template-columns:1fr 1fr; gap:26px; }
+.ve-taxonomy-col h3{ font-family:'Oswald',sans-serif; font-size:16px; margin-bottom:10px; }
+.ve-tax-list{ display:flex; flex-direction:column; gap:6px; margin-bottom:10px; max-height:320px; overflow:auto; }
+.ve-tax-item{ display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:13.5px; }
+.ve-tax-item button{ background:none; border:none; cursor:pointer; color:var(--muted); }
+
+.ve-settings{ background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:24px; }
+.ve-settings h2{ font-family:'Oswald',sans-serif; font-size:19px; margin-bottom:16px; }
+.ve-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px 0; border-top:1px solid var(--line); }
+.ve-toggle{ width:46px; height:26px; border-radius:20px; background:#D8D8D0; border:none; cursor:pointer; position:relative; flex-shrink:0; }
+.ve-toggle.on{ background:var(--success); }
+.ve-toggle-thumb{ position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:#fff; transition:transform .15s; }
+.ve-toggle.on .ve-toggle-thumb{ transform:translateX(20px); }
+.ve-badge{ display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; padding:5px 10px; border-radius:20px; }
+.ve-badge-success{ background:var(--success-bg); color:var(--success); }
+.ve-badge-warning{ background:var(--warn-bg); color:var(--warn-fg); }
+
+.ve-footer{ background:var(--graphite); color:#D6D9D6; margin-top:20px; }
+.ve-footer-grid{ max-width:1200px; margin:0 auto; padding:40px 24px; display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:30px; }
+.ve-footer h4{ color:#fff; font-family:'Oswald',sans-serif; font-size:14px; margin-bottom:8px; letter-spacing:.3px; }
+.ve-footer .ve-muted{ color:#9BA1A0; font-size:13px; line-height:1.6; }
+.ve-footer-bottom{ border-top:1px solid #33383B; text-align:center; padding:16px; font-size:12px; color:#8B9190; }
+
+.ve-muted{ color:var(--muted); }
+
+@media print{
+  .ve-header, .ve-footer, .ve-filters, .ve-shop-toolbar-actions{ display:none !important; }
+}
+
+@media (max-width: 860px){
+  .ve-header-row{ flex-wrap:wrap; }
+  .ve-search{ order:3; width:100%; min-width:0; margin-left:0; }
+  .ve-nav{ margin-left:auto; }
+  .ve-hero{ grid-template-columns:1fr; }
+  .ve-shop-body{ grid-template-columns:1fr; }
+  .ve-filters{ position:static; }
+  .ve-admin{ grid-template-columns:1fr; }
+  .ve-admin-sidebar{ position:static; height:auto; flex-direction:row; flex-wrap:wrap; }
+  .ve-admin-nav{ flex-direction:row; }
+  .ve-form-grid{ grid-template-columns:1fr; }
+  .ve-taxonomy{ grid-template-columns:1fr; }
+  .ve-product-grid{ grid-template-columns:1fr; }
+}
