@@ -254,6 +254,7 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
   .ve-contact-grid{ grid-template-columns:1fr; }
   .ve-simple-page{ padding:26px 16px 50px; }
   .ve-footer-grid{ flex-direction:column; gap:24px; padding:30px 16px; }
+  .ve-footer-grid > div{ flex:none; }
   .ve-banner{ aspect-ratio:16/10; }
   .ve-banner-slide{ object-fit:contain; background:var(--graphite); }
 }
