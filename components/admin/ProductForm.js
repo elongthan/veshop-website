@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Upload } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { saveProduct } from "@/actions/products";
 
@@ -38,45 +38,63 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
     sku: product.sku || "",
     name: product.name || "",
     brand: product.brand || brands[0] || "",
-    category: product.category || categories[0] || "",
+    categories: product.categories?.length ? product.categories : (categories[0] ? [categories[0]] : []),
     price: product.price ?? "",
     shortDescription: product.short_description || "",
     newArrival: !!product.new_arrival,
-    imageUrl: product.image_url || ""
+    active: product.active !== false,
+    images: product.images?.length ? product.images : []
   } : {
-    id: "", sku: "", name: "", brand: brands[0] || "", category: categories[0] || "",
-    price: "", shortDescription: "", newArrival: false, imageUrl: ""
+    id: "", sku: "", name: "", brand: brands[0] || "",
+    categories: categories[0] ? [categories[0]] : [],
+    price: "", shortDescription: "", newArrival: false, active: true, images: []
   });
   const [tagInput, setTagInput] = useState((product?.tags || []).join(", "));
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const fileRef = useRef(null);
 
-  async function handleFile(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  async function handleFiles(e) {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setUploading(true);
     try {
-      const blob = await resizeImage(file);
       const supabase = createClient();
-      const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
-      const { error } = await supabase.storage.from("product-images").upload(path, blob, {
-        contentType: "image/jpeg",
-        upsert: false
-      });
-      if (error) throw error;
-      const { data } = supabase.storage.from("product-images").getPublicUrl(path);
-      setForm((f) => ({ ...f, imageUrl: data.publicUrl }));
+      for (const file of files) {
+        const blob = await resizeImage(file);
+        const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+        const { error } = await supabase.storage.from("product-images").upload(path, blob, {
+          contentType: "image/jpeg",
+          upsert: false
+        });
+        if (error) throw error;
+        const { data } = supabase.storage.from("product-images").getPublicUrl(path);
+        setForm((f) => ({ ...f, images: [...f.images, data.publicUrl] }));
+      }
     } catch (err) {
       alert("Could not upload that image: " + err.message);
     }
     setUploading(false);
+    e.target.value = "";
+  }
+
+  function removeImage(url) {
+    setForm((f) => ({ ...f, images: f.images.filter((u) => u !== url) }));
+  }
+
+  function toggleCategory(cat) {
+    setForm((f) => ({
+      ...f,
+      categories: f.categories.includes(cat) ? f.categories.filter((c) => c !== cat) : [...f.categories, cat]
+    }));
   }
 
   async function submit(e) {
     e.preventDefault();
     if (!form.name.trim()) return alert("Item name is required.");
     if (form.price === "" || isNaN(Number(form.price))) return alert("Enter a valid price.");
+    if (form.images.length === 0) return alert("Upload at least one product image.");
+    if (form.categories.length === 0) return alert("Select at least one category.");
     setSaving(true);
     const tags = tagInput.split(",").map((t) => t.trim()).filter(Boolean);
     try {
@@ -92,24 +110,33 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
     <form className="ve-product-form" onSubmit={submit}>
       <div className="ve-form-grid">
         <div className="ve-form-imgcol">
-          <label className="ve-filter-label">Photo</label>
-          <div className="ve-upload-box" onClick={() => fileRef.current?.click()}>
-            {form.imageUrl ? (
-              <img src={form.imageUrl} alt="" />
-            ) : (
-              <div className="ve-upload-empty">
-                <Upload size={20} />
-                <span>{uploading ? "Uploading..." : "Click to upload image"}</span>
+          <label className="ve-filter-label">Photos * (at least one)</label>
+          <div className="ve-multi-images">
+            {form.images.map((url) => (
+              <div key={url} className="ve-multi-image-item">
+                <img src={url} alt="" />
+                <button type="button" onClick={() => removeImage(url)}><X size={12} /></button>
               </div>
-            )}
+            ))}
+            <button type="button" className="ve-multi-image-add" onClick={() => fileRef.current?.click()} disabled={uploading}>
+              <Upload size={16} />
+              <span>{uploading ? "Uploading..." : "Add photo"}</span>
+            </button>
           </div>
-          <input ref={fileRef} type="file" accept="image/*" onChange={handleFile} hidden />
-          <label className="ve-check" style={{ marginTop: 10 }}>
+          <input ref={fileRef} type="file" accept="image/*" multiple onChange={handleFiles} hidden />
+          <label className="ve-check" style={{ marginTop: 12 }}>
             <input
               type="checkbox" checked={form.newArrival}
               onChange={(e) => setForm((f) => ({ ...f, newArrival: e.target.checked }))}
             />
             Mark as new arrival
+          </label>
+          <label className="ve-check" style={{ marginTop: 6 }}>
+            <input
+              type="checkbox" checked={form.active}
+              onChange={(e) => setForm((f) => ({ ...f, active: e.target.checked }))}
+            />
+            Active (visible on website)
           </label>
         </div>
 
@@ -135,19 +162,19 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
             </div>
           </div>
 
-          <div className="ve-form-row">
-            <div>
-              <label className="ve-filter-label">Brand</label>
-              <select value={form.brand} onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))}>
-                {brands.map((b) => <option key={b} value={b}>{b}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="ve-filter-label">Category</label>
-              <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}>
-                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
-              </select>
-            </div>
+          <label className="ve-filter-label">Brand</label>
+          <select value={form.brand} onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))}>
+            {brands.map((b) => <option key={b} value={b}>{b}</option>)}
+          </select>
+
+          <label className="ve-filter-label">Categories * (select all that apply)</label>
+          <div className="ve-checklist ve-checklist-cats">
+            {categories.map((c) => (
+              <label key={c} className="ve-check">
+                <input type="checkbox" checked={form.categories.includes(c)} onChange={() => toggleCategory(c)} />
+                {c}
+              </label>
+            ))}
           </div>
 
           <label className="ve-filter-label">Short description</label>

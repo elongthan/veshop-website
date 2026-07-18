@@ -59,7 +59,7 @@ export default function ProductsClient({ products, categories, brands }) {
       </div>
       <div className="ve-admin-table">
         <div className="ve-admin-row ve-admin-row-head">
-          <span>Item</span><span>Brand</span><span>Category</span><span>Price</span><span></span>
+          <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Status</span><span></span>
         </div>
         {list.map((p) => (
           <div className="ve-admin-row" key={p.id}>
@@ -71,8 +71,13 @@ export default function ProductsClient({ products, categories, brands }) {
               </span>
             </span>
             <span>{p.brand || "—"}</span>
-            <span>{p.category || "—"}</span>
+            <span>{p.categories?.join(", ") || "—"}</span>
             <span>{fmtPrice(p.price)}</span>
+            <span>
+              {p.active !== false
+                ? <span className="ve-badge ve-badge-success">Active</span>
+                : <span className="ve-badge ve-badge-warning">Inactive</span>}
+            </span>
             <span className="ve-admin-actions">
               <button onClick={() => startEdit(p)} aria-label="Edit"><Pencil size={15} /></button>
               <button onClick={() => handleDelete(p)} aria-label="Delete"><Trash2 size={15} /></button>

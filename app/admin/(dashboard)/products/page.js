@@ -3,7 +3,7 @@ import ProductsClient from "@/components/admin/ProductsClient";
 
 export default async function AdminProductsPage() {
   const [products, categories, brands] = await Promise.all([
-    getProducts(), getCategories(), getBrands()
+    getProducts({ includeInactive: true }), getCategories(), getBrands()
   ]);
 
   return (

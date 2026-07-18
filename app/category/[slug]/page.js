@@ -25,7 +25,7 @@ export default async function CategoryPage({ params }) {
   const category = categories.find((c) => slugify(c) === params.slug);
   if (!category) notFound();
 
-  const items = products.filter((p) => p.category === category);
+  const items = products.filter((p) => p.categories?.includes(category));
 
   return (
     <>

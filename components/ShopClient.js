@@ -31,7 +31,7 @@ function ShopInner({ products, categories, brands, showPrices }) {
 
   const filtered = useMemo(() => {
     let list = products.filter((p) => {
-      if (categoryFilter && p.category !== categoryFilter) return false;
+      if (categoryFilter && !p.categories?.includes(categoryFilter)) return false;
       if (brandFilter.length && !brandFilter.includes(p.brand)) return false;
       if (tagFilter.length && !tagFilter.every((t) => (p.tags || []).includes(t))) return false;
       if (minPrice !== "" && p.price < Number(minPrice)) return false;

@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import ProductGallery from "@/components/ProductGallery";
+import ShareButton from "@/components/ShareButton";
 import { getProduct, getSettings } from "@/lib/data";
 import { fmtPrice, slugify } from "@/lib/slug";
-import { ImageOff } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }) {
     openGraph: {
       title: product.name,
       description: product.short_description,
-      images: product.image_url ? [product.image_url] : []
+      images: product.images?.length ? product.images : []
     }
   };
 }
@@ -33,7 +34,7 @@ export default async function ProductPage({ params }) {
     sku: product.sku || undefined,
     brand: product.brand ? { "@type": "Brand", name: product.brand } : undefined,
     description: product.short_description,
-    image: product.image_url ? [product.image_url] : undefined,
+    image: product.images?.length ? product.images : undefined,
     ...(settings.show_prices
       ? {
           offers: {
@@ -59,19 +60,13 @@ export default async function ProductPage({ params }) {
           {product.name}
         </div>
         <div className="ve-product-grid">
-          <div className="ve-product-img">
-            {product.image_url ? (
-              <img src={product.image_url} alt={product.name} />
-            ) : (
-              <div className="ve-img-fallback"><ImageOff size={40} strokeWidth={1.2} /></div>
-            )}
-          </div>
+          <ProductGallery images={product.images} name={product.name} />
           <div className="ve-product-info">
             <div className="ve-card-brand">{product.brand || "—"}</div>
             <h1>{product.name}</h1>
             <div className="ve-product-meta">
               <span>SKU {product.sku || "—"}</span>
-              <span>{product.category}</span>
+              <span>{product.categories?.join(", ") || product.category}</span>
             </div>
             {settings.show_prices ? (
               <div className="ve-product-price">{fmtPrice(product.price)} <small>(GST incl.)</small></div>
@@ -79,13 +74,15 @@ export default async function ProductPage({ params }) {
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
             )}
             <p className="ve-product-desc">{product.short_description}</p>
-            <a
-              className="ve-btn ve-btn-primary"
-              style={{ marginTop: 16 }}
-              href={`mailto:${settings.contact_email || "sales@veshop.com.sg"}?subject=Enquiry: ${encodeURIComponent(product.name)}`}
-            >
-              Enquire about this item
-            </a>
+            <div className="ve-product-actions">
+              <a
+                className="ve-btn ve-btn-primary"
+                href={`mailto:${settings.contact_email || "sales@veshop.com.sg"}?subject=Enquiry: ${encodeURIComponent(product.name)}`}
+              >
+                Enquire about this item
+              </a>
+              <ShareButton title={product.name} />
+            </div>
           </div>
         </div>
       </main>
