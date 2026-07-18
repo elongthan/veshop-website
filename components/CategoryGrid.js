@@ -26,11 +26,11 @@ export default function CategoryGrid({ categoryTree }) {
             {c.children.length > 0 && (
               <button
                 type="button"
-                className={`ve-cat-expand ${openId === c.id ? "open" : ""}`}
+                className={`ve-cat-sub-toggle ${openId === c.id ? "open" : ""}`}
                 onClick={() => setOpenId(openId === c.id ? null : c.id)}
-                aria-label={`Show subcategories of ${c.name}`}
               >
-                <ChevronDown size={16} />
+                {c.children.length} subcategor{c.children.length === 1 ? "y" : "ies"}
+                <ChevronDown size={15} />
               </button>
             )}
           </div>

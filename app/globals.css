@@ -72,6 +72,10 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-cat-img{ aspect-ratio:1/1; width:100%; background:var(--paper); display:flex; align-items:center; justify-content:center; color:#B4B7AE; }
 .ve-cat-img img{ width:100%; height:100%; object-fit:cover; }
 .ve-cat-name{ padding:12px 14px; font-size:14px; font-weight:600; }
+.ve-cat-sub-toggle{ width:100%; display:flex; align-items:center; justify-content:space-between; gap:6px; padding:9px 14px; background:var(--paper); border:none; border-top:1px solid var(--line); color:var(--signal); font-family:inherit; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.3px; cursor:pointer; }
+.ve-cat-sub-toggle:hover{ background:#EFE2DA; }
+.ve-cat-sub-toggle svg{ transition:transform .15s; }
+.ve-cat-sub-toggle.open svg{ transform:rotate(180deg); }
 
 .ve-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; }
 .ve-card{ background:var(--paper-card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; cursor:pointer; display:flex; flex-direction:column; transition:box-shadow .15s, transform .15s; text-decoration:none; color:var(--ink); }
@@ -231,8 +235,6 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-footer-whatsapp:hover{ color:#3CE87F; }
 .ve-footer-bottom{ border-top:1px solid #33383B; text-align:center; padding:16px; font-size:12px; color:#8B9190; }
 
-.ve-cat-expand{ position:absolute; top:10px; right:10px; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:6px; width:26px; height:26px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--steel); transition:transform .15s; box-shadow:0 2px 6px rgba(0,0,0,.15); }
-.ve-cat-expand.open{ transform:rotate(180deg); }
 .ve-cat-subdrop{ position:absolute; top:calc(100% + 4px); left:0; right:0; background:#fff; border:1px solid var(--line); border-radius:8px; box-shadow:0 8px 20px rgba(20,20,20,.1); z-index:5; padding:6px; display:flex; flex-direction:column; }
 .ve-cat-subdrop a{ display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:6px; text-decoration:none; color:var(--ink); font-size:13px; }
 .ve-cat-subdrop a:hover{ background:var(--paper); }
@@ -243,10 +245,9 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-ticker-track{ display:flex; gap:48px; width:max-content; animation:ve-ticker-scroll 28s linear infinite; }
 .ve-ticker-item{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; height:100px; min-width:120px; }
 .ve-ticker-logo{ display:flex; align-items:center; justify-content:center; height:64px; }
-.ve-ticker-logo img{ max-height:64px; max-width:170px; object-fit:contain; filter:grayscale(1); opacity:.75; transition:filter .15s, opacity .15s; }
-.ve-ticker-item:hover .ve-ticker-logo img{ filter:none; opacity:1; }
+.ve-ticker-logo img{ max-height:64px; max-width:170px; object-fit:contain; }
 .ve-ticker-logo strong{ font-family:'Oswald',sans-serif; font-size:20px; font-weight:600; color:var(--muted); white-space:nowrap; }
-.ve-ticker-name{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.3px; color:var(--muted); white-space:nowrap; text-transform:uppercase; }
+.ve-ticker-name{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.3px; color:var(--steel); white-space:nowrap; text-transform:uppercase; font-weight:500; }
 @keyframes ve-ticker-scroll{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
 
 .ve-logo-img{ height:40px; width:auto; max-width:120px; object-fit:contain; }
@@ -328,7 +329,7 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
   .ve-ticker-item{ height:78px; min-width:90px; gap:6px; }
   .ve-ticker-logo{ height:44px; }
   .ve-ticker-logo img{ max-height:44px; max-width:110px; }
-  .ve-ticker-name{ font-size:10px; }
+  .ve-ticker-name{ font-size:11px; }
   .ve-ticker-track{ gap:28px; animation-duration:18s; }
   .ve-gallery-thumbs button{ width:52px; height:52px; }
   .ve-multi-images{ grid-template-columns:repeat(3, 1fr); }
