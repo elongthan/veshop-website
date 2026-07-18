@@ -190,6 +190,7 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-tax-item-main{ display:flex; align-items:center; gap:9px; min-width:0; }
 .ve-tax-icon-btn{ width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0; color:var(--muted); padding:0; }
 .ve-tax-icon-btn img{ width:100%; height:100%; object-fit:cover; }
+.ve-tax-icon-spinner{ width:12px; height:12px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--signal); animation:spin .7s linear infinite; }
 .ve-tax-rename-input{ border:1px solid var(--signal); border-radius:5px; padding:3px 6px; font-family:inherit; font-size:13.5px; }
 .ve-inline-add-cat{ flex-wrap:wrap; }
 .ve-inline-add-cat select{ padding:9px 10px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:13px; }

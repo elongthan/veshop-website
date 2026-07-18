@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { X, Plus, Upload, Pencil } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -18,17 +18,38 @@ async function uploadToSiteAssets(file, prefix) {
   return data.publicUrl;
 }
 
+function IconUploadLabel({ imageUrl, onFile, uploading, title }) {
+  return (
+    <label className="ve-tax-icon-btn" title={title}>
+      {uploading ? (
+        <span className="ve-tax-icon-spinner" />
+      ) : imageUrl ? (
+        <img src={imageUrl} alt="" />
+      ) : (
+        <Upload size={12} />
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        hidden
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          e.target.value = "";
+          if (file) onFile(file);
+        }}
+      />
+    </label>
+  );
+}
+
 export default function TaxonomyClient({ categories, brands }) {
   const [newCat, setNewCat] = useState("");
   const [newCatParent, setNewCatParent] = useState("");
   const [newBrand, setNewBrand] = useState("");
   const [renamingCat, setRenamingCat] = useState(null);
   const [renameValue, setRenameValue] = useState("");
-  const [catIconTarget, setCatIconTarget] = useState(null);
-  const [brandLogoTarget, setBrandLogoTarget] = useState(null);
+  const [uploadingId, setUploadingId] = useState(null); // "cat-<id>" or "brand-<id>"
   const router = useRouter();
-  const catIconInputRef = useRef(null);
-  const brandLogoInputRef = useRef(null);
 
   const topLevel = categories.filter((c) => !c.parent_id);
   const childrenOf = (id) => categories.filter((c) => c.parent_id === id);
@@ -52,22 +73,16 @@ export default function TaxonomyClient({ categories, brands }) {
     router.refresh();
   }
 
-  function startCatIconUpload(cat) {
-    setCatIconTarget(cat);
-    // Wait a tick so the target is set before the (now-empty) input opens
-    setTimeout(() => catIconInputRef.current?.click(), 0);
-  }
-  async function handleCatIconChange(e) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !catIconTarget) return;
+  async function handleCatIconFile(cat, file) {
+    setUploadingId(`cat-${cat.id}`);
     try {
       const url = await uploadToSiteAssets(file, "category-icon");
-      await updateCategory(catIconTarget.id, { icon_url: url });
+      await updateCategory(cat.id, { icon_url: url });
       router.refresh();
     } catch (err) {
       alert("Could not upload icon: " + err.message);
     }
+    setUploadingId(null);
   }
 
   async function handleAddBrand(e) {
@@ -82,29 +97,20 @@ export default function TaxonomyClient({ categories, brands }) {
     await removeBrand(name);
     router.refresh();
   }
-
-  function startBrandLogoUpload(brand) {
-    setBrandLogoTarget(brand);
-    setTimeout(() => brandLogoInputRef.current?.click(), 0);
-  }
-  async function handleBrandLogoChange(e) {
-    const file = e.target.files?.[0];
-    e.target.value = "";
-    if (!file || !brandLogoTarget) return;
+  async function handleBrandLogoFile(brand, file) {
+    setUploadingId(`brand-${brand.id}`);
     try {
       const url = await uploadToSiteAssets(file, "brand-logo");
-      await updateBrand(brandLogoTarget.id, { logo_url: url });
+      await updateBrand(brand.id, { logo_url: url });
       router.refresh();
     } catch (err) {
       alert("Could not upload logo: " + err.message);
     }
+    setUploadingId(null);
   }
 
   return (
     <div className="ve-taxonomy">
-      <input ref={catIconInputRef} type="file" accept="image/*" hidden onChange={handleCatIconChange} />
-      <input ref={brandLogoInputRef} type="file" accept="image/*" hidden onChange={handleBrandLogoChange} />
-
       <div className="ve-taxonomy-col">
         <h3>Categories &amp; subcategories</h3>
         <div className="ve-tax-list">
@@ -112,9 +118,12 @@ export default function TaxonomyClient({ categories, brands }) {
             <div key={cat.id}>
               <div className="ve-tax-item">
                 <div className="ve-tax-item-main">
-                  <button type="button" className="ve-tax-icon-btn" onClick={() => startCatIconUpload(cat)} title="Change icon">
-                    {cat.icon_url ? <img src={cat.icon_url} alt="" /> : <Upload size={12} />}
-                  </button>
+                  <IconUploadLabel
+                    imageUrl={cat.icon_url}
+                    uploading={uploadingId === `cat-${cat.id}`}
+                    title="Change icon"
+                    onFile={(file) => handleCatIconFile(cat, file)}
+                  />
                   {renamingCat === cat.id ? (
                     <input
                       className="ve-tax-rename-input"
@@ -136,9 +145,12 @@ export default function TaxonomyClient({ categories, brands }) {
               {childrenOf(cat.id).map((sub) => (
                 <div key={sub.id} className="ve-tax-item ve-tax-item-sub">
                   <div className="ve-tax-item-main">
-                    <button type="button" className="ve-tax-icon-btn" onClick={() => startCatIconUpload(sub)} title="Change icon">
-                      {sub.icon_url ? <img src={sub.icon_url} alt="" /> : <Upload size={12} />}
-                    </button>
+                    <IconUploadLabel
+                      imageUrl={sub.icon_url}
+                      uploading={uploadingId === `cat-${sub.id}`}
+                      title="Change icon"
+                      onFile={(file) => handleCatIconFile(sub, file)}
+                    />
                     {renamingCat === sub.id ? (
                       <input
                         className="ve-tax-rename-input"
@@ -177,9 +189,12 @@ export default function TaxonomyClient({ categories, brands }) {
           {brands.map((b) => (
             <div key={b.id} className="ve-tax-item">
               <div className="ve-tax-item-main">
-                <button type="button" className="ve-tax-icon-btn" onClick={() => startBrandLogoUpload(b)} title="Change logo">
-                  {b.logo_url ? <img src={b.logo_url} alt="" /> : <Upload size={12} />}
-                </button>
+                <IconUploadLabel
+                  imageUrl={b.logo_url}
+                  uploading={uploadingId === `brand-${b.id}`}
+                  title="Change logo"
+                  onFile={(file) => handleBrandLogoFile(b, file)}
+                />
                 <span>{b.name}</span>
               </div>
               <button type="button" onClick={() => handleRemoveBrand(b.name)} aria-label="Remove"><X size={14} /></button>
