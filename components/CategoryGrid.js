@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Package } from "lucide-react";
 import { slugify } from "@/lib/slug";
 
 export default function CategoryGrid({ categoryTree }) {
@@ -10,16 +10,18 @@ export default function CategoryGrid({ categoryTree }) {
 
   return (
     <div className="ve-cat-grid">
-      {categoryTree.map((c, i) => (
+      {categoryTree.map((c) => (
         <div key={c.id} className="ve-cat-tile-wrap">
           <div className="ve-cat-tile">
             <Link href={`/category/${slugify(c.name)}`} className="ve-cat-tile-link">
-              {c.icon_url ? (
-                <img src={c.icon_url} alt="" className="ve-cat-icon" />
-              ) : (
-                <span className="ve-cat-index">{String(i + 1).padStart(2, "0")}</span>
-              )}
-              <span>{c.name}</span>
+              <span className="ve-cat-img">
+                {c.icon_url ? (
+                  <img src={c.icon_url} alt="" />
+                ) : (
+                  <Package size={28} strokeWidth={1.3} />
+                )}
+              </span>
+              <span className="ve-cat-name">{c.name}</span>
             </Link>
             {c.children.length > 0 && (
               <button
