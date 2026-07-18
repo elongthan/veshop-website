@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import { useState } from "react";
+import { Search, Menu } from "lucide-react";
+import SideNav from "./SideNav";
 
 export default function Header({ settings }) {
   const router = useRouter();
+  const [navOpen, setNavOpen] = useState(false);
 
   function onSearch(e) {
     e.preventDefault();
@@ -19,6 +22,9 @@ export default function Header({ settings }) {
     <header className="ve-header">
       <div className="ve-hazard-bar" />
       <div className="ve-header-row">
+        <button className="ve-menu-btn" onClick={() => setNavOpen(true)} aria-label="Open category menu">
+          <Menu size={20} />
+        </button>
         <Link href="/" className="ve-logo">
           {settings?.logo_url ? (
             <img src={settings.logo_url} alt={siteName} className="ve-logo-img" />
@@ -39,6 +45,7 @@ export default function Header({ settings }) {
           <input name="q" placeholder="Search products, brands, SKU..." />
         </form>
       </div>
+      <SideNav open={navOpen} onClose={() => setNavOpen(false)} />
     </header>
   );
 }

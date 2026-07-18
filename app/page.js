@@ -3,9 +3,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
 import BannerCarousel from "@/components/BannerCarousel";
+import CategoryGrid from "@/components/CategoryGrid";
 import BrandTicker from "@/components/BrandTicker";
 import { getBrandRows, getCategoryTree, getProducts, getSettings } from "@/lib/data";
-import { slugify } from "@/lib/slug";
 
 export const dynamic = "force-dynamic";
 
@@ -44,21 +44,7 @@ export default async function HomePage() {
 
         <section id="categories" className="ve-section">
           <div className="ve-section-head"><h2>Shop by category</h2></div>
-          <div className="ve-cat-grid">
-            {categoryTree.map((c, i) => (
-              <Link key={c.id} href={`/category/${slugify(c.name)}`} className="ve-cat-tile">
-                {c.icon_url ? (
-                  <img src={c.icon_url} alt="" className="ve-cat-icon" />
-                ) : (
-                  <span className="ve-cat-index">{String(i + 1).padStart(2, "0")}</span>
-                )}
-                <span>
-                  {c.name}
-                  {c.children.length > 0 && <em className="ve-cat-sub-count"> · {c.children.length} sub</em>}
-                </span>
-              </Link>
-            ))}
-          </div>
+          <CategoryGrid categoryTree={categoryTree} />
         </section>
 
         <section className="ve-section">

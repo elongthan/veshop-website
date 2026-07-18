@@ -24,9 +24,11 @@ export default function TaxonomyClient({ categories, brands }) {
   const [newBrand, setNewBrand] = useState("");
   const [renamingCat, setRenamingCat] = useState(null);
   const [renameValue, setRenameValue] = useState("");
+  const [catIconTarget, setCatIconTarget] = useState(null);
+  const [brandLogoTarget, setBrandLogoTarget] = useState(null);
   const router = useRouter();
-  const catIconRefs = useRef({});
-  const brandLogoRefs = useRef({});
+  const catIconInputRef = useRef(null);
+  const brandLogoInputRef = useRef(null);
 
   const topLevel = categories.filter((c) => !c.parent_id);
   const childrenOf = (id) => categories.filter((c) => c.parent_id === id);
@@ -49,12 +51,19 @@ export default function TaxonomyClient({ categories, brands }) {
     setRenamingCat(null);
     router.refresh();
   }
-  async function handleCatIcon(cat, e) {
+
+  function startCatIconUpload(cat) {
+    setCatIconTarget(cat);
+    // Wait a tick so the target is set before the (now-empty) input opens
+    setTimeout(() => catIconInputRef.current?.click(), 0);
+  }
+  async function handleCatIconChange(e) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    e.target.value = "";
+    if (!file || !catIconTarget) return;
     try {
       const url = await uploadToSiteAssets(file, "category-icon");
-      await updateCategory(cat.id, { icon_url: url });
+      await updateCategory(catIconTarget.id, { icon_url: url });
       router.refresh();
     } catch (err) {
       alert("Could not upload icon: " + err.message);
@@ -73,12 +82,18 @@ export default function TaxonomyClient({ categories, brands }) {
     await removeBrand(name);
     router.refresh();
   }
-  async function handleBrandLogo(brand, e) {
+
+  function startBrandLogoUpload(brand) {
+    setBrandLogoTarget(brand);
+    setTimeout(() => brandLogoInputRef.current?.click(), 0);
+  }
+  async function handleBrandLogoChange(e) {
     const file = e.target.files?.[0];
-    if (!file) return;
+    e.target.value = "";
+    if (!file || !brandLogoTarget) return;
     try {
       const url = await uploadToSiteAssets(file, "brand-logo");
-      await updateBrand(brand.id, { logo_url: url });
+      await updateBrand(brandLogoTarget.id, { logo_url: url });
       router.refresh();
     } catch (err) {
       alert("Could not upload logo: " + err.message);
@@ -87,6 +102,9 @@ export default function TaxonomyClient({ categories, brands }) {
 
   return (
     <div className="ve-taxonomy">
+      <input ref={catIconInputRef} type="file" accept="image/*" hidden onChange={handleCatIconChange} />
+      <input ref={brandLogoInputRef} type="file" accept="image/*" hidden onChange={handleBrandLogoChange} />
+
       <div className="ve-taxonomy-col">
         <h3>Categories &amp; subcategories</h3>
         <div className="ve-tax-list">
@@ -94,10 +112,9 @@ export default function TaxonomyClient({ categories, brands }) {
             <div key={cat.id}>
               <div className="ve-tax-item">
                 <div className="ve-tax-item-main">
-                  <button className="ve-tax-icon-btn" onClick={() => catIconRefs.current[cat.id]?.click()} title="Change icon">
+                  <button type="button" className="ve-tax-icon-btn" onClick={() => startCatIconUpload(cat)} title="Change icon">
                     {cat.icon_url ? <img src={cat.icon_url} alt="" /> : <Upload size={12} />}
                   </button>
-                  <input ref={(el) => (catIconRefs.current[cat.id] = el)} type="file" accept="image/*" hidden onChange={(e) => handleCatIcon(cat, e)} />
                   {renamingCat === cat.id ? (
                     <input
                       className="ve-tax-rename-input"
@@ -112,17 +129,16 @@ export default function TaxonomyClient({ categories, brands }) {
                   )}
                 </div>
                 <span className="ve-admin-actions">
-                  <button onClick={() => { setRenamingCat(cat.id); setRenameValue(cat.name); }} aria-label="Rename"><Pencil size={13} /></button>
-                  <button onClick={() => handleRemoveCategory(cat)} aria-label="Remove"><X size={14} /></button>
+                  <button type="button" onClick={() => { setRenamingCat(cat.id); setRenameValue(cat.name); }} aria-label="Rename"><Pencil size={13} /></button>
+                  <button type="button" onClick={() => handleRemoveCategory(cat)} aria-label="Remove"><X size={14} /></button>
                 </span>
               </div>
               {childrenOf(cat.id).map((sub) => (
                 <div key={sub.id} className="ve-tax-item ve-tax-item-sub">
                   <div className="ve-tax-item-main">
-                    <button className="ve-tax-icon-btn" onClick={() => catIconRefs.current[sub.id]?.click()} title="Change icon">
+                    <button type="button" className="ve-tax-icon-btn" onClick={() => startCatIconUpload(sub)} title="Change icon">
                       {sub.icon_url ? <img src={sub.icon_url} alt="" /> : <Upload size={12} />}
                     </button>
-                    <input ref={(el) => (catIconRefs.current[sub.id] = el)} type="file" accept="image/*" hidden onChange={(e) => handleCatIcon(sub, e)} />
                     {renamingCat === sub.id ? (
                       <input
                         className="ve-tax-rename-input"
@@ -137,8 +153,8 @@ export default function TaxonomyClient({ categories, brands }) {
                     )}
                   </div>
                   <span className="ve-admin-actions">
-                    <button onClick={() => { setRenamingCat(sub.id); setRenameValue(sub.name); }} aria-label="Rename"><Pencil size={13} /></button>
-                    <button onClick={() => handleRemoveCategory(sub)} aria-label="Remove"><X size={14} /></button>
+                    <button type="button" onClick={() => { setRenamingCat(sub.id); setRenameValue(sub.name); }} aria-label="Rename"><Pencil size={13} /></button>
+                    <button type="button" onClick={() => handleRemoveCategory(sub)} aria-label="Remove"><X size={14} /></button>
                   </span>
                 </div>
               ))}
@@ -161,13 +177,12 @@ export default function TaxonomyClient({ categories, brands }) {
           {brands.map((b) => (
             <div key={b.id} className="ve-tax-item">
               <div className="ve-tax-item-main">
-                <button className="ve-tax-icon-btn" onClick={() => brandLogoRefs.current[b.id]?.click()} title="Change logo">
+                <button type="button" className="ve-tax-icon-btn" onClick={() => startBrandLogoUpload(b)} title="Change logo">
                   {b.logo_url ? <img src={b.logo_url} alt="" /> : <Upload size={12} />}
                 </button>
-                <input ref={(el) => (brandLogoRefs.current[b.id] = el)} type="file" accept="image/*" hidden onChange={(e) => handleBrandLogo(b, e)} />
                 <span>{b.name}</span>
               </div>
-              <button onClick={() => handleRemoveBrand(b.name)} aria-label="Remove"><X size={14} /></button>
+              <button type="button" onClick={() => handleRemoveBrand(b.name)} aria-label="Remove"><X size={14} /></button>
             </div>
           ))}
         </div>
