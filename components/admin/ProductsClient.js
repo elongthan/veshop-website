@@ -60,7 +60,7 @@ export default function ProductsClient({ products, categories, brands, watermark
       </div>
       <div className="ve-admin-table">
         <div className="ve-admin-row ve-admin-row-head">
-          <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Status</span><span></span>
+          <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Sale price</span><span>Status</span><span></span>
         </div>
         {list.map((p) => (
           <div className="ve-admin-row" key={p.id}>
@@ -74,6 +74,11 @@ export default function ProductsClient({ products, categories, brands, watermark
             <span>{p.brand || "—"}</span>
             <span>{p.categories?.join(", ") || "—"}</span>
             <span>{fmtPrice(p.price)}</span>
+            <span>
+              {p.sale_price != null && Number(p.sale_price) < Number(p.price)
+                ? <span className="ve-price-now" style={{ fontSize: 13.5 }}>{fmtPrice(p.sale_price)}</span>
+                : <span className="ve-muted">—</span>}
+            </span>
             <span>
               {p.active !== false
                 ? <span className="ve-badge ve-badge-success">Active</span>

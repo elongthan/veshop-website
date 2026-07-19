@@ -170,7 +170,7 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-admin-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
 .ve-admin-head h2{ font-family:'Oswald',sans-serif; font-size:21px; }
 .ve-admin-table{ border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:#fff; }
-.ve-admin-row{ display:grid; grid-template-columns:2fr 1fr 1.2fr .7fr .8fr 70px; align-items:center; padding:10px 14px; border-bottom:1px solid var(--line); font-size:13.5px; gap:8px; }
+.ve-admin-row{ display:grid; grid-template-columns:1.8fr .9fr 1.1fr .7fr .7fr .8fr 70px; align-items:center; padding:10px 14px; border-bottom:1px solid var(--line); font-size:13.5px; gap:8px; }
 .ve-admin-row:last-child{ border-bottom:none; }
 .ve-admin-row-head{ background:var(--paper); font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; color:var(--muted); font-weight:600; }
 .ve-admin-item{ display:flex; align-items:center; gap:10px; }
