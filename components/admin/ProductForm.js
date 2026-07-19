@@ -40,7 +40,7 @@ function resizeImage(file, maxDim = 1000, quality = 0.8, watermarkUrl = null) {
             const logo = await loadImage(watermarkUrl, "anonymous");
             const wmWidth = width * 0.35;
             const wmHeight = wmWidth * (logo.height / logo.width);
-            ctx.globalAlpha = 0.55;
+            ctx.globalAlpha = 0.3;
             ctx.drawImage(logo, (width - wmWidth) / 2, (height - wmHeight) / 2, wmWidth, wmHeight);
             ctx.globalAlpha = 1;
           } catch (e) {
@@ -108,6 +108,10 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
     setForm((f) => ({ ...f, images: f.images.filter((u) => u !== url) }));
   }
 
+  function setAsCover(url) {
+    setForm((f) => ({ ...f, images: [url, ...f.images.filter((u) => u !== url)] }));
+  }
+
   function toggleCategory(cat) {
     setForm((f) => ({
       ...f,
@@ -136,12 +140,13 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
     <form className="ve-product-form" onSubmit={submit}>
       <div className="ve-form-grid">
         <div className="ve-form-imgcol">
-          <label className="ve-filter-label">Photos * (at least one)</label>
+          <label className="ve-filter-label">Photos * (at least one — click a photo to make it the cover)</label>
           <div className="ve-multi-images">
-            {form.images.map((url) => (
-              <div key={url} className="ve-multi-image-item">
+            {form.images.map((url, i) => (
+              <div key={url} className={`ve-multi-image-item ${i === 0 ? "is-cover" : ""}`} onClick={() => setAsCover(url)}>
+                {i === 0 && <span className="ve-cover-badge">Cover</span>}
                 <img src={url} alt="" />
-                <button type="button" onClick={() => removeImage(url)}><X size={12} /></button>
+                <button type="button" onClick={(e) => { e.stopPropagation(); removeImage(url); }}><X size={12} /></button>
               </div>
             ))}
             <button type="button" className="ve-multi-image-add" onClick={() => fileRef.current?.click()} disabled={uploading}>

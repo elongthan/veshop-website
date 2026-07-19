@@ -42,6 +42,7 @@ export async function saveProduct(product) {
   if (product.id) {
     const { error } = await supabase.from("products").update(payload).eq("id", product.id);
     if (error) throw new Error(error.message);
+    revalidatePath(`/product/${product.id}`);
   } else {
     const { error } = await supabase.from("products").insert(payload);
     if (error) throw new Error(error.message);
