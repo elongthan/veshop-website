@@ -30,6 +30,7 @@ export async function saveProduct(product) {
     category: categories[0],
     categories,
     price: Number(product.price) || 0,
+    sale_price: product.salePrice !== "" && product.salePrice != null ? Number(product.salePrice) : null,
     short_description: product.shortDescription || "",
     tags: product.tags || [],
     image_url: images[0],

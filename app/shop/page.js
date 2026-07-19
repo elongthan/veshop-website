@@ -26,6 +26,7 @@ export default async function ShopPage() {
         categories={categories}
         brands={brands}
         showPrices={settings.show_prices}
+        settings={settings}
       />
       <Footer settings={settings} />
     </>

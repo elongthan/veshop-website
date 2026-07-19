@@ -7,7 +7,7 @@ import { deleteProduct } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 
-export default function ProductsClient({ products, categories, brands }) {
+export default function ProductsClient({ products, categories, brands, watermarkLogo }) {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
@@ -40,6 +40,7 @@ export default function ProductsClient({ products, categories, brands }) {
           product={editing}
           categories={categories}
           brands={brands}
+          watermarkLogo={watermarkLogo}
           onDone={handleDone}
           onCancel={() => { setShowForm(false); setEditing(null); }}
         />

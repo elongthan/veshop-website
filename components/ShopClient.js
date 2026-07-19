@@ -6,7 +6,7 @@ import { Search, Sliders, Package } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import PrintCatalogButton from "@/components/PrintCatalogButton";
 
-function ShopInner({ products, categories, brands, showPrices }) {
+function ShopInner({ products, categories, brands, showPrices, settings }) {
   const searchParams = useSearchParams();
 
   const [query, setQuery] = useState(searchParams.get("q") || "");
@@ -77,7 +77,12 @@ function ShopInner({ products, categories, brands, showPrices }) {
             <option value="price-desc">Price: high to low</option>
             <option value="name-asc">Name: A–Z</option>
           </select>
-          <PrintCatalogButton />
+          <PrintCatalogButton
+            products={filtered}
+            categoryLabel={categoryFilter}
+            showPrices={showPrices}
+            settings={settings}
+          />
         </div>
       </div>
 

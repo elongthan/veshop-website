@@ -84,6 +84,12 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-card-img img{ width:100%; height:100%; object-fit:cover; }
 .ve-img-fallback{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#B4B7AE; }
 .ve-corner-tag{ position:absolute; top:10px; left:0; background:var(--signal); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; letter-spacing:.3px; }
+.ve-corner-tag-sale{ background:#D42020; }
+.ve-price-sale{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
+.ve-price-was{ text-decoration:line-through; color:var(--muted); font-weight:400; }
+.ve-card-price .ve-price-was{ font-size:12px; }
+.ve-product-price .ve-price-was{ font-size:16px; }
+.ve-price-now{ color:#D42020; font-weight:700; }
 .ve-card-body{ padding:14px; display:flex; flex-direction:column; gap:4px; flex:1; }
 .ve-card-brand{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--signal); text-transform:uppercase; letter-spacing:.4px; }
 .ve-card-title{ font-size:14.5px; font-weight:600; line-height:1.3; margin:0; }
@@ -133,6 +139,10 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-product-meta{ display:flex; gap:14px; font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
 .ve-product-price{ font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; margin:10px 0; }
 .ve-product-desc{ color:var(--steel); font-size:15px; line-height:1.65; margin-bottom:14px; }
+.ve-related{ margin-top:48px; }
+.ve-related h2{ font-family:'Oswald',sans-serif; font-size:20px; margin-bottom:16px; }
+.ve-related-scroll{ display:flex; gap:14px; overflow-x:auto; padding-bottom:10px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; }
+.ve-related-item{ flex:0 0 220px; scroll-snap-align:start; }
 .ve-gallery-thumbs{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 .ve-gallery-thumbs button{ width:60px; height:60px; border-radius:8px; overflow:hidden; border:2px solid transparent; padding:0; cursor:pointer; background:#F5F5F1; }
 .ve-gallery-thumbs button.active{ border-color:var(--signal); }

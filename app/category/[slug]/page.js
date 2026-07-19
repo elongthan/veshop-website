@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
+import PrintCatalogButton from "@/components/PrintCatalogButton";
 import { getCategories, getProducts, getSettings } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 
@@ -43,6 +44,14 @@ export default async function CategoryPage({ params }) {
             <Link className="ve-btn ve-btn-ghost ve-btn-sm" href={`/shop?category=${encodeURIComponent(category)}`}>
               Search and filter this category
             </Link>
+            {items.length > 0 && (
+              <PrintCatalogButton
+                products={items}
+                categoryLabel={category}
+                showPrices={settings.show_prices}
+                settings={settings}
+              />
+            )}
           </div>
         </div>
         {items.length === 0 ? (

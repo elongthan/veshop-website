@@ -4,8 +4,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductGallery from "@/components/ProductGallery";
 import ShareButton from "@/components/ShareButton";
-import { getProduct, getSettings } from "@/lib/data";
+import { getProduct, getProducts, getSettings } from "@/lib/data";
 import { fmtPrice, slugify } from "@/lib/slug";
+import { PriceTag } from "@/components/PriceTag";
+import ProductCard from "@/components/ProductCard";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +26,14 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const [product, settings] = await Promise.all([getProduct(params.id), getSettings()]);
+  const [product, settings, allProducts] = await Promise.all([
+    getProduct(params.id), getSettings(), getProducts()
+  ]);
   if (!product) notFound();
+
+  const related = allProducts
+    .filter((p) => p.id !== product.id && p.categories?.some((c) => product.categories?.includes(c)))
+    .slice(0, 10);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -69,7 +77,11 @@ export default async function ProductPage({ params }) {
               <span>{product.categories?.join(", ") || product.category}</span>
             </div>
             {settings.show_prices ? (
-              <div className="ve-product-price">{fmtPrice(product.price)} <small>(GST incl.)</small></div>
+              product.sale_price != null && Number(product.sale_price) < Number(product.price) ? (
+                <PriceTag product={product} showPrices={true} size="detail" />
+              ) : (
+                <div className="ve-product-price">{fmtPrice(product.price)} <small>(GST incl.)</small></div>
+              )
             ) : (
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
             )}
@@ -85,6 +97,19 @@ export default async function ProductPage({ params }) {
             </div>
           </div>
         </div>
+
+        {related.length > 0 && (
+          <section className="ve-related">
+            <h2>You may also like</h2>
+            <div className="ve-related-scroll">
+              {related.map((p) => (
+                <div key={p.id} className="ve-related-item">
+                  <ProductCard product={p} showPrices={settings.show_prices} />
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </main>
       <Footer settings={settings} />
       <script

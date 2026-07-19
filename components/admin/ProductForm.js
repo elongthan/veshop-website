@@ -5,14 +5,24 @@ import { Upload, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { saveProduct } from "@/actions/products";
 
-function resizeImage(file, maxDim = 1000, quality = 0.8) {
+function loadImage(src, crossOrigin) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    if (crossOrigin) img.crossOrigin = crossOrigin;
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Could not load image"));
+    img.src = src;
+  });
+}
+
+function resizeImage(file, maxDim = 1000, quality = 0.8, watermarkUrl = null) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("Could not read file"));
     reader.onload = () => {
       const img = new Image();
       img.onerror = () => reject(new Error("Could not decode image"));
-      img.onload = () => {
+      img.onload = async () => {
         let { width, height } = img;
         if (width > maxDim || height > maxDim) {
           if (width > height) { height = Math.round(height * (maxDim / width)); width = maxDim; }
@@ -24,6 +34,21 @@ function resizeImage(file, maxDim = 1000, quality = 0.8) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
         ctx.drawImage(img, 0, 0, width, height);
+
+        if (watermarkUrl) {
+          try {
+            const logo = await loadImage(watermarkUrl, "anonymous");
+            const wmWidth = width * 0.35;
+            const wmHeight = wmWidth * (logo.height / logo.width);
+            ctx.globalAlpha = 0.55;
+            ctx.drawImage(logo, (width - wmWidth) / 2, (height - wmHeight) / 2, wmWidth, wmHeight);
+            ctx.globalAlpha = 1;
+          } catch (e) {
+            // Watermark couldn't load (e.g. CORS) — continue without it
+            // rather than block the whole upload.
+          }
+        }
+
         canvas.toBlob((blob) => resolve(blob), "image/jpeg", quality);
       };
       img.src = reader.result;
@@ -32,7 +57,7 @@ function resizeImage(file, maxDim = 1000, quality = 0.8) {
   });
 }
 
-export default function ProductForm({ product, categories, brands, onDone, onCancel }) {
+export default function ProductForm({ product, categories, brands, watermarkLogo, onDone, onCancel }) {
   const [form, setForm] = useState(() => product ? {
     id: product.id,
     sku: product.sku || "",
@@ -40,6 +65,7 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
     brand: product.brand || brands[0] || "",
     categories: product.categories?.length ? product.categories : (categories[0] ? [categories[0]] : []),
     price: product.price ?? "",
+    salePrice: product.sale_price ?? "",
     shortDescription: product.short_description || "",
     newArrival: !!product.new_arrival,
     active: product.active !== false,
@@ -47,7 +73,7 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
   } : {
     id: "", sku: "", name: "", brand: brands[0] || "",
     categories: categories[0] ? [categories[0]] : [],
-    price: "", shortDescription: "", newArrival: false, active: true, images: []
+    price: "", salePrice: "", shortDescription: "", newArrival: false, active: true, images: []
   });
   const [tagInput, setTagInput] = useState((product?.tags || []).join(", "));
   const [uploading, setUploading] = useState(false);
@@ -61,7 +87,7 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
     try {
       const supabase = createClient();
       for (const file of files) {
-        const blob = await resizeImage(file);
+        const blob = await resizeImage(file, 1000, 0.8, watermarkLogo);
         const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
         const { error } = await supabase.storage.from("product-images").upload(path, blob, {
           contentType: "image/jpeg",
@@ -158,6 +184,17 @@ export default function ProductForm({ product, categories, brands, onDone, onCan
                 type="number" step="0.01" min="0" value={form.price}
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 placeholder="0.00" required
+              />
+            </div>
+          </div>
+
+          <div className="ve-form-row">
+            <div>
+              <label className="ve-filter-label">Sale price (optional — leave blank if not on sale)</label>
+              <input
+                type="number" step="0.01" min="0" value={form.salePrice}
+                onChange={(e) => setForm((f) => ({ ...f, salePrice: e.target.value }))}
+                placeholder="e.g. 32.00"
               />
             </div>
           </div>
