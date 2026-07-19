@@ -13,7 +13,10 @@ const PLACEHOLDER = `[
     "category": "PPE & Equipment",
     "price": 40.37,
     "shortDescription": "Direct Vulcanized Technology (DVT) for exceptional bonding between the shoe upper and the NBR sole.",
-    "imageUrl": "https://veshop.com.sg/265-medium_default/rhino-un101sp-ultranite-safety-shoes.jpg"
+    "imageUrls": [
+      "https://veshop.com.sg/2-medium_default/rhino-un101sp-ultranite-safety-shoes.jpg",
+      "https://veshop.com.sg/3-medium_default/rhino-un101sp-ultranite-safety-shoes.jpg"
+    ]
   }
 ]`;
 
@@ -57,8 +60,9 @@ export default function ImportClient() {
       <div className="ve-admin-head"><h2>Bulk import products</h2></div>
       <p className="ve-muted" style={{ marginBottom: 14 }}>
         Paste a JSON list of products below (Claude will prepare these for you in chat). Each needs at least
-        a name, price and imageUrl. Products with a SKU that already exists are skipped automatically, so
-        it's safe to re-run a batch.
+        a name, price and imageUrls (a list — one or more photos). Photos are automatically watermarked with
+        your logo if one's set in Site content. Products with a SKU that already exists are skipped
+        automatically, so it's safe to re-run a batch.
       </p>
       <textarea
         className="ve-import-textarea"
