@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Lock, ArrowLeft } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { resolveUsernameToEmail } from "@/actions/adminUsers";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,11 +18,23 @@ export default function AdminLoginPage() {
     e.preventDefault();
     setLoading(true);
     setErr("");
+
+    let email = identifier.trim();
+    if (!email.includes("@")) {
+      const resolved = await resolveUsernameToEmail(email);
+      if (!resolved) {
+        setErr("Incorrect username/email or password.");
+        setLoading(false);
+        return;
+      }
+      email = resolved;
+    }
+
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
-      setErr("Incorrect email or password.");
+      setErr("Incorrect username/email or password.");
       return;
     }
     router.push("/admin/products");
@@ -36,8 +49,8 @@ export default function AdminLoginPage() {
         <h2>Admin sign in</h2>
         <p className="ve-muted">Manage products, pricing visibility and catalog structure.</p>
         <input
-          type="email" placeholder="Admin email" value={email}
-          onChange={(e) => setEmail(e.target.value)} autoFocus required
+          type="text" placeholder="Username or email" value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)} autoFocus required
         />
         <input
           type="password" placeholder="Password" value={password}
@@ -47,9 +60,6 @@ export default function AdminLoginPage() {
         <button className="ve-btn ve-btn-primary" type="submit" disabled={loading}>
           {loading ? "Signing in..." : "Sign in"}
         </button>
-        <p className="ve-hint">
-          Use the admin account you created in your Supabase project (Authentication → Users).
-        </p>
       </form>
     </main>
   );

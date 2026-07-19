@@ -40,7 +40,7 @@ function resizeImage(file, maxDim = 1000, quality = 0.8, watermarkUrl = null) {
             const logo = await loadImage(watermarkUrl, "anonymous");
             const wmWidth = width * 0.35;
             const wmHeight = wmWidth * (logo.height / logo.width);
-            ctx.globalAlpha = 0.3;
+            ctx.globalAlpha = 0.18;
             ctx.drawImage(logo, (width - wmWidth) / 2, (height - wmHeight) / 2, wmWidth, wmHeight);
             ctx.globalAlpha = 1;
           } catch (e) {

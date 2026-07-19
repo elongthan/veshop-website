@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, CheckCircle2, XCircle, SkipForward } from "lucide-react";
+import { Upload, CheckCircle2, XCircle, SkipForward, FileJson } from "lucide-react";
 import { importProduct } from "@/actions/import";
 
 const PLACEHOLDER = `[
@@ -26,6 +26,15 @@ export default function ImportClient() {
   const [results, setResults] = useState([]);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const router = useRouter();
+
+  function handleFile(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => setText(reader.result);
+    reader.readAsText(file);
+    e.target.value = "";
+  }
 
   async function runImport() {
     let items;
@@ -64,6 +73,10 @@ export default function ImportClient() {
         your logo if one's set in Site content. Products with a SKU that already exists are skipped
         automatically, so it's safe to re-run a batch.
       </p>
+      <label className="ve-btn ve-btn-ghost ve-btn-sm" style={{ display: "inline-flex", marginBottom: 10, cursor: "pointer" }}>
+        <FileJson size={15} /> Load from .json file
+        <input type="file" accept=".json,application/json" hidden onChange={handleFile} disabled={running} />
+      </label>
       <textarea
         className="ve-import-textarea"
         rows={12}

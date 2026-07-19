@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Lock, Package, LayoutGrid, Settings, LogOut, Image, UploadCloud } from "lucide-react";
+import { ArrowLeft, Lock, Package, LayoutGrid, Settings, LogOut, Image, UploadCloud, Users, UserCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminSidebar() {
@@ -35,6 +35,12 @@ export default function AdminSidebar() {
         </Link>
         <Link className={pathname.startsWith("/admin/settings") ? "active" : ""} href="/admin/settings">
           <Settings size={16} /> Settings
+        </Link>
+        <Link className={pathname.startsWith("/admin/users") ? "active" : ""} href="/admin/users">
+          <Users size={16} /> Admin users
+        </Link>
+        <Link className={pathname.startsWith("/admin/account") ? "active" : ""} href="/admin/account">
+          <UserCircle size={16} /> My account
         </Link>
       </nav>
       <button className="ve-logout" onClick={signOut}><LogOut size={14} /> Sign out</button>
