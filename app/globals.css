@@ -226,6 +226,14 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-color-row{ display:flex; gap:8px; align-items:center; margin-top:4px; }
 .ve-color-row input[type=color]{ width:44px; height:38px; padding:2px; border:1px solid var(--line); border-radius:6px; cursor:pointer; }
 .ve-settings h2{ font-family:'Oswald',sans-serif; font-size:19px; margin-bottom:16px; }
+.ve-import-textarea{ width:100%; font-family:'IBM Plex Mono',monospace; font-size:12px; padding:14px; border:1px solid var(--line); border-radius:8px; background:#fff; }
+.ve-import-results{ margin-top:18px; background:#fff; border:1px solid var(--line); border-radius:var(--radius); padding:6px; max-height:320px; overflow-y:auto; }
+.ve-import-row{ display:flex; align-items:center; gap:8px; padding:8px 10px; font-size:13px; border-bottom:1px solid var(--paper); }
+.ve-import-row:last-child{ border-bottom:none; }
+.ve-import-row em{ font-style:normal; color:var(--muted); font-size:11.5px; margin-left:auto; }
+.ve-import-ok{ color:var(--success); flex-shrink:0; }
+.ve-import-skip{ color:var(--hazard); flex-shrink:0; }
+.ve-import-fail{ color:#D42020; flex-shrink:0; }
 .ve-toggle-row{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px 0; border-top:1px solid var(--line); }
 .ve-toggle{ width:46px; height:26px; border-radius:20px; background:#D8D8D0; border:none; cursor:pointer; position:relative; flex-shrink:0; }
 .ve-toggle.on{ background:var(--success); }

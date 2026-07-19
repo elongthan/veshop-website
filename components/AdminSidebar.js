@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowLeft, Lock, Package, LayoutGrid, Settings, LogOut, Image } from "lucide-react";
+import { ArrowLeft, Lock, Package, LayoutGrid, Settings, LogOut, Image, UploadCloud } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 export default function AdminSidebar() {
@@ -26,6 +26,9 @@ export default function AdminSidebar() {
         </Link>
         <Link className={pathname.startsWith("/admin/site-content") ? "active" : ""} href="/admin/site-content">
           <Image size={16} /> Site content
+        </Link>
+        <Link className={pathname.startsWith("/admin/import") ? "active" : ""} href="/admin/import">
+          <UploadCloud size={16} /> Bulk import
         </Link>
         <Link className={pathname.startsWith("/admin/taxonomy") ? "active" : ""} href="/admin/taxonomy">
           <LayoutGrid size={16} /> Categories &amp; brands
