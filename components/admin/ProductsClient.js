@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Search } from "lucide-react";
-import { deleteProduct } from "@/actions/products";
+import { Plus, Pencil, Trash2, Search, AlertTriangle } from "lucide-react";
+import { deleteProduct, deleteAllProducts } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 
@@ -11,6 +11,7 @@ export default function ProductsClient({ products, categories, brands, watermark
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
+  const [deletingAll, setDeletingAll] = useState(false);
   const router = useRouter();
 
   const list = products.filter((p) =>
@@ -30,6 +31,21 @@ export default function ProductsClient({ products, categories, brands, watermark
     if (!confirm(`Delete "${p.name}"?`)) return;
     await deleteProduct(p.id);
     router.refresh();
+  }
+
+  async function handleDeleteAll() {
+    const typed = prompt(
+      `This permanently deletes all ${products.length} products. Type DELETE to confirm.`
+    );
+    if (typed !== "DELETE") return;
+    setDeletingAll(true);
+    try {
+      await deleteAllProducts();
+      router.refresh();
+    } catch (err) {
+      alert("Could not delete: " + err.message);
+    }
+    setDeletingAll(false);
   }
 
   if (showForm) {
@@ -52,7 +68,14 @@ export default function ProductsClient({ products, categories, brands, watermark
     <>
       <div className="ve-admin-head">
         <h2>Products <span className="ve-muted">({products.length})</span></h2>
-        <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={startAdd}><Plus size={15} /> Add item</button>
+        <div style={{ display: "flex", gap: 8 }}>
+          {products.length > 0 && (
+            <button className="ve-btn ve-btn-ghost ve-btn-sm ve-btn-danger" onClick={handleDeleteAll} disabled={deletingAll}>
+              <AlertTriangle size={14} /> {deletingAll ? "Deleting..." : "Delete all products"}
+            </button>
+          )}
+          <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={startAdd}><Plus size={15} /> Add item</button>
+        </div>
       </div>
       <div className="ve-search ve-search-inline" style={{ marginBottom: 14 }}>
         <Search size={15} />

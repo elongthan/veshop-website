@@ -58,6 +58,16 @@ export async function deleteProduct(id) {
   revalidateCatalog();
 }
 
+export async function deleteAllProducts() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  // Deletes every product row. Storage photos aren't removed automatically —
+  // they're harmless left behind, but you can ignore that for now.
+  const { error } = await supabase.from("products").delete().gte("created_at", "1900-01-01");
+  if (error) throw new Error(error.message);
+  revalidateCatalog();
+}
+
 export async function toggleShowPrices(value) {
   const supabase = await createClient();
   await requireAdmin(supabase);

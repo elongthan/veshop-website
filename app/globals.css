@@ -105,6 +105,8 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-btn-ghost{ background:none; color:var(--ink); }
 .ve-btn-ghost:hover{ background:var(--paper); }
 .ve-btn-sm{ padding:7px 12px; font-size:13px; }
+.ve-btn-danger{ color:#D42020; border-color:#D42020; }
+.ve-btn-danger:hover{ background:#FDECEC; }
 .ve-link{ background:none; border:none; color:var(--signal); font-weight:600; font-size:13.5px; cursor:pointer; padding:0; display:inline-flex; align-items:center; gap:5px; font-family:inherit; text-decoration:none; }
 
 .ve-tag-row{ display:flex; flex-wrap:wrap; gap:6px; }
