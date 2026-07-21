@@ -92,7 +92,7 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-price-now{ color:#D42020; font-weight:700; }
 .ve-card-body{ padding:14px; display:flex; flex-direction:column; gap:4px; flex:1; }
 .ve-card-brand{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--signal); text-transform:uppercase; letter-spacing:.4px; }
-.ve-card-title{ font-size:14.5px; font-weight:600; line-height:1.3; margin:0; }
+.ve-card-title{ font-size:14.5px; font-weight:600; line-height:1.3; margin:0; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:2.6em; }
 .ve-card-desc{ font-size:12.5px; color:var(--muted); line-height:1.5; margin:2px 0 8px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 .ve-card-foot{ margin-top:auto; display:flex; align-items:center; justify-content:space-between; }
 .ve-card-price{ font-family:'IBM Plex Mono',monospace; font-weight:500; font-size:14px; }
@@ -145,6 +145,7 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-related h2{ font-family:'Oswald',sans-serif; font-size:20px; margin-bottom:16px; }
 .ve-related-scroll{ display:flex; gap:14px; overflow-x:auto; padding-bottom:10px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; }
 .ve-related-item{ flex:0 0 220px; scroll-snap-align:start; }
+.ve-related-item .ve-card{ height:100%; }
 .ve-gallery-thumbs{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
 .ve-gallery-thumbs button{ width:60px; height:60px; border-radius:8px; overflow:hidden; border:2px solid transparent; padding:0; cursor:pointer; background:#F5F5F1; }
 .ve-gallery-thumbs button.active{ border-color:var(--signal); }
