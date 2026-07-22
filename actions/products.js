@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { cleanText, hasUncleanText } from "@/lib/textClean";
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -25,14 +26,14 @@ export async function saveProduct(product) {
 
   const payload = {
     sku: product.sku || null,
-    name: product.name,
+    name: cleanText(product.name),
     brand: product.brand || null,
     category: categories[0],
     categories,
     price: Number(product.price) || 0,
     sale_price: product.salePrice !== "" && product.salePrice != null ? Number(product.salePrice) : null,
-    short_description: product.shortDescription || "",
-    description: product.description || "",
+    short_description: cleanText(product.shortDescription) || "",
+    description: cleanText(product.description) || "",
     tags: product.tags || [],
     image_url: images[0],
     images,
@@ -49,6 +50,41 @@ export async function saveProduct(product) {
     if (error) throw new Error(error.message);
   }
   revalidateCatalog();
+}
+
+export async function scanUncleanText() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, short_description, description, image_url")
+    .order("name", { ascending: true });
+  if (error) throw new Error(error.message);
+
+  return data
+    .filter((p) => hasUncleanText(p.name) || hasUncleanText(p.short_description) || hasUncleanText(p.description))
+    .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url }));
+}
+
+export async function fixUncleanText(ids) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, short_description, description")
+    .in("id", ids);
+  if (error) throw new Error(error.message);
+
+  for (const p of data) {
+    const { error: updateError } = await supabase.from("products").update({
+      name: cleanText(p.name),
+      short_description: cleanText(p.short_description) || "",
+      description: cleanText(p.description) || ""
+    }).eq("id", p.id);
+    if (updateError) throw new Error(updateError.message);
+  }
+  revalidateCatalog();
+  return data.length;
 }
 
 export async function deleteProduct(id) {
