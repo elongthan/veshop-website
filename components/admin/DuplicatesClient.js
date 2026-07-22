@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Trash2, CheckCircle2, Sparkles } from "lucide-react";
-import { findDuplicateProducts, deleteProducts, scanUncleanText, fixUncleanText } from "@/actions/products";
+import { findDuplicateProducts, deleteProducts, scanUncleanText, fixUncleanText, scanPossiblyTruncated } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 
 export default function DuplicatesClient() {
@@ -13,6 +13,8 @@ export default function DuplicatesClient() {
   const [textIssues, setTextIssues] = useState(null);
   const [textScanning, setTextScanning] = useState(false);
   const [textFixing, setTextFixing] = useState(false);
+  const [truncated, setTruncated] = useState(null);
+  const [truncScanning, setTruncScanning] = useState(false);
   const router = useRouter();
 
   async function scan() {
@@ -55,6 +57,13 @@ export default function DuplicatesClient() {
     setTextIssues([]);
     setTextFixing(false);
     router.refresh();
+  }
+
+  async function scanTruncated() {
+    setTruncScanning(true);
+    const result = await scanPossiblyTruncated();
+    setTruncated(result);
+    setTruncScanning(false);
   }
 
   const totalExtra = groups?.reduce((n, g) => n + (g.length - 1), 0) || 0;
@@ -142,6 +151,45 @@ export default function DuplicatesClient() {
               <span className="ve-admin-item">
                 <img src={p.image_url || ""} alt="" />
                 <span><strong>{p.name}</strong></span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="ve-admin-head" style={{ marginTop: 34, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+        <h2>Possibly-truncated descriptions</h2>
+      </div>
+      <p className="ve-muted" style={{ marginBottom: 14 }}>
+        Flags products whose short description doesn't end with normal punctuation — the signature of the
+        old site's SQL export cutting text off partway through a sentence during migration. Compare each
+        flagged one against the old site, then find it by name in the Products tab and re-paste the full
+        text into its Short description field.
+      </p>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+        <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={scanTruncated} disabled={truncScanning}>
+          <Search size={15} /> {truncScanning ? "Scanning..." : "Scan all products"}
+        </button>
+      </div>
+
+      {truncated && truncated.length === 0 && (
+        <div className="ve-empty" style={{ padding: "30px 0" }}>
+          <CheckCircle2 size={28} strokeWidth={1.3} />
+          <p>No obviously truncated descriptions found.</p>
+        </div>
+      )}
+
+      {truncated?.length > 0 && (
+        <div className="ve-dup-group">
+          {truncated.map((p) => (
+            <div key={p.id} className="ve-admin-row" style={{ gridTemplateColumns: "1fr" }}>
+              <span className="ve-admin-item">
+                <img src={p.image_url || ""} alt="" />
+                <span>
+                  <strong>{p.name}</strong>
+                  <em>...{p.snippet}</em>
+                </span>
               </span>
             </div>
           ))}

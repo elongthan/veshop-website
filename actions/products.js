@@ -87,6 +87,28 @@ export async function fixUncleanText(ids) {
   return data.length;
 }
 
+export async function scanPossiblyTruncated() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, short_description, image_url")
+    .not("short_description", "is", null)
+    .order("name", { ascending: true });
+  if (error) throw new Error(error.message);
+
+  // A short_description that doesn't end in normal sentence punctuation is
+  // very likely cut off mid-sentence — this is how the 400-character export
+  // truncation from the old site shows up (e.g. "...secure support, and confid").
+  const endsCleanly = /[.!?"')]\s*$/;
+  return data
+    .filter((p) => {
+      const text = (p.short_description || "").trim();
+      return text.length > 0 && !endsCleanly.test(text);
+    })
+    .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url, snippet: (p.short_description || "").slice(-60) }));
+}
+
 export async function deleteProduct(id) {
   const supabase = await createClient();
   await requireAdmin(supabase);
