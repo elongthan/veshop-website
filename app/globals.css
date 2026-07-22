@@ -141,6 +141,10 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-product-meta{ display:flex; gap:14px; font-size:12.5px; color:var(--muted); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
 .ve-product-price{ font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; margin:10px 0; }
 .ve-product-desc{ color:var(--steel); font-size:15px; line-height:1.65; margin-bottom:14px; }
+.ve-product-full-desc{ margin:6px 0 20px; padding-top:14px; border-top:1px solid var(--line); }
+.ve-product-full-desc h3{ font-family:'Oswald',sans-serif; font-size:15px; margin-bottom:10px; }
+.ve-product-full-desc ul{ margin:0; padding-left:20px; display:flex; flex-direction:column; gap:6px; }
+.ve-product-full-desc li{ color:var(--steel); font-size:13.5px; line-height:1.55; }
 .ve-related{ margin-top:48px; }
 .ve-related h2{ font-family:'Oswald',sans-serif; font-size:20px; margin-bottom:16px; }
 .ve-related-scroll{ display:flex; gap:14px; overflow-x:auto; padding-bottom:10px; scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch; }

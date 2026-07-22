@@ -96,6 +96,7 @@ export async function importProduct(item) {
     categories: item.category ? [item.category] : [],
     price: Number(item.price) || 0,
     short_description: item.shortDescription || "",
+    description: item.description || "",
     tags: [],
     image_url: uploadedUrls[0],
     images: uploadedUrls,

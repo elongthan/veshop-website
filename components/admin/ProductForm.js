@@ -67,13 +67,14 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
     price: product.price ?? "",
     salePrice: product.sale_price ?? "",
     shortDescription: product.short_description || "",
+    description: product.description || "",
     newArrival: !!product.new_arrival,
     active: product.active !== false,
     images: product.images?.length ? product.images : []
   } : {
     id: "", sku: "", name: "", brand: brands[0] || "",
     categories: categories[0] ? [categories[0]] : [],
-    price: "", salePrice: "", shortDescription: "", newArrival: false, active: true, images: []
+    price: "", salePrice: "", shortDescription: "", description: "", newArrival: false, active: true, images: []
   });
   const [tagInput, setTagInput] = useState((product?.tags || []).join(", "));
   const [uploading, setUploading] = useState(false);
@@ -224,6 +225,13 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
             rows={3} value={form.shortDescription}
             onChange={(e) => setForm((f) => ({ ...f, shortDescription: e.target.value }))}
             placeholder="One or two sentences customers will see on the product card"
+          />
+
+          <label className="ve-filter-label">Full description (shown on the product page, one point per line)</label>
+          <textarea
+            rows={6} value={form.description}
+            onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+            placeholder="Key features, specifications, one per line"
           />
 
           <label className="ve-filter-label">Tag words (comma separated)</label>

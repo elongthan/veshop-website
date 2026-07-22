@@ -86,6 +86,16 @@ export default async function ProductPage({ params }) {
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
             )}
             <p className="ve-product-desc">{product.short_description}</p>
+            {product.description && (
+              <div className="ve-product-full-desc">
+                <h3>Description</h3>
+                <ul>
+                  {product.description.split("\n").map((line) => line.trim()).filter(Boolean).map((line, i) => (
+                    <li key={i}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="ve-product-actions">
               <a
                 className="ve-btn ve-btn-primary"
