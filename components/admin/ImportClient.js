@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, CheckCircle2, XCircle, SkipForward, FileJson } from "lucide-react";
+import { Upload, CheckCircle2, XCircle, SkipForward, FileJson, RefreshCw } from "lucide-react";
 import { importProduct } from "@/actions/import";
 
 const PLACEHOLDER = `[
@@ -70,8 +70,9 @@ export default function ImportClient() {
       <p className="ve-muted" style={{ marginBottom: 14 }}>
         Paste a JSON list of products below (Claude will prepare these for you in chat). Each needs at least
         a name, price and imageUrls (a list — one or more photos). Photos are automatically watermarked with
-        your logo if one's set in Site content. Products with a SKU that already exists are skipped
-        automatically, so it's safe to re-run a batch.
+        your logo if one's set in Site content. Products with a SKU that already exists get their text
+        details (name, price, description, category) refreshed rather than re-imported — their existing
+        photos are left alone, so it's safe to re-run a batch.
       </p>
       <label className="ve-btn ve-btn-ghost ve-btn-sm" style={{ display: "inline-flex", marginBottom: 10, cursor: "pointer" }}>
         <FileJson size={15} /> Load from .json file
@@ -95,10 +96,12 @@ export default function ImportClient() {
         <div className="ve-import-results">
           {results.map((r, i) => (
             <div key={i} className="ve-import-row">
-              {r.ok && !r.skipped && <CheckCircle2 size={15} className="ve-import-ok" />}
+              {r.ok && !r.skipped && !r.updated && <CheckCircle2 size={15} className="ve-import-ok" />}
+              {r.ok && r.updated && <RefreshCw size={15} className="ve-import-skip" />}
               {r.ok && r.skipped && <SkipForward size={15} className="ve-import-skip" />}
               {!r.ok && <XCircle size={15} className="ve-import-fail" />}
               <span>{r.name}</span>
+              {r.updated && <em>details refreshed</em>}
               {r.skipped && <em>already exists — skipped</em>}
               {!r.ok && <em>{r.error}</em>}
             </div>

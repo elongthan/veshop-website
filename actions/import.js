@@ -50,11 +50,26 @@ export async function importProduct(item) {
   if (item.sku) {
     const { data: existing } = await supabase
       .from("products")
-      .select("id")
+      .select("id, images")
       .eq("sku", item.sku)
       .maybeSingle();
     if (existing) {
-      return { ok: true, skipped: true, name: item.name };
+      // Product already exists — refresh its text fields (useful when a
+      // later batch adds info like a fuller description) without
+      // re-downloading photos it already has.
+      const { error: updErr } = await supabase.from("products").update({
+        name: item.name,
+        brand: item.brand || null,
+        category: item.category || null,
+        categories: item.category ? [item.category] : [],
+        price: Number(item.price) || 0,
+        short_description: item.shortDescription || "",
+        description: item.description || ""
+      }).eq("id", existing.id);
+      if (updErr) return { ok: false, name: item.name, error: updErr.message };
+      revalidatePath("/");
+      revalidatePath("/shop");
+      return { ok: true, updated: true, name: item.name };
     }
   }
 
