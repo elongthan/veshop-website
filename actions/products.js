@@ -69,6 +69,36 @@ export async function deleteAllProducts() {
   revalidateCatalog();
 }
 
+export async function findDuplicateProducts() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, sku, brand, price, image_url, created_at")
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+
+  // Group by SKU when present (exact match), otherwise by normalized name +
+  // brand — the best available signal for products that never had a SKU.
+  const groups = {};
+  for (const p of data) {
+    const key = p.sku
+      ? `sku:${p.sku.trim().toLowerCase()}`
+      : `name:${p.name.trim().toLowerCase()}|${(p.brand || "").trim().toLowerCase()}`;
+    (groups[key] ||= []).push(p);
+  }
+
+  return Object.values(groups).filter((g) => g.length > 1);
+}
+
+export async function deleteProducts(ids) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { error } = await supabase.from("products").delete().in("id", ids);
+  if (error) throw new Error(error.message);
+  revalidateCatalog();
+}
+
 export async function toggleShowPrices(value) {
   const supabase = await createClient();
   await requireAdmin(supabase);
