@@ -49,7 +49,7 @@ export default async function HomePage() {
 
         <section className="ve-section">
           <div className="ve-section-head">
-            <h2>Recently added</h2>
+            <h2>{settings.featured_section_heading || "Featured Products"}</h2>
             <Link className="ve-link" href="/shop">View all →</Link>
           </div>
           <div className="ve-grid">
