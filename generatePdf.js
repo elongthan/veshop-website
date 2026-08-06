@@ -1,4 +1,5 @@
 import { fmtPrice } from "@/lib/slug";
+import { cleanText } from "@/lib/textClean";
 
 async function urlToDataUrl(url) {
   const res = await fetch(url);
@@ -18,23 +19,6 @@ function measureImage(dataUrl) {
     img.onerror = () => reject(new Error("Could not measure image"));
     img.src = dataUrl;
   });
-}
-
-// The PDF's built-in font only supports plain Latin text. Product text can
-// contain "smart" typography characters (from the old site, or pasted from
-// Word/websites) that this font can't measure or draw correctly — which
-// silently breaks line-wrapping and cuts text off mid-word. Replace them
-// with safe plain-text equivalents before anything is measured or drawn.
-function sanitizeForPdf(str) {
-  if (!str) return str;
-  return str
-    .replace(/[\u2010-\u2015\u2212]/g, "-")   // hyphens/dashes incl. non-breaking hyphen
-    .replace(/[\u2018\u2019\u201A\u2032]/g, "'")  // smart single quotes
-    .replace(/[\u201C\u201D\u201E\u2033]/g, '"')  // smart double quotes
-    .replace(/\u2026/g, "...")                 // ellipsis
-    .replace(/[\u00A0\u202F]/g, " ")           // non-breaking / narrow spaces
-    .replace(/[\u2022\u25CF\u25AA]/g, "-")     // bullet-like symbols
-    .replace(/[^\x00-\xFF]/g, "");             // anything else outside Latin-1
 }
 
 function hexToRgb(hex) {
@@ -110,9 +94,9 @@ export async function downloadCatalogPdf({ products, categoryLabel, settings }) 
   const textWidth = pageWidth - margin - textX;
 
   for (const p of products) {
-    const safeName = sanitizeForPdf(p.name);
-    const safeShortDesc = sanitizeForPdf(p.short_description);
-    const safeDesc = sanitizeForPdf(p.description);
+    const safeName = cleanText(p.name);
+    const safeShortDesc = cleanText(p.short_description);
+    const safeDesc = cleanText(p.description);
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);

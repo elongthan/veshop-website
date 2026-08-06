@@ -16,7 +16,9 @@ export default async function HomePage() {
     getSettings(),
     getBrandRows()
   ]);
-  const recent = products.slice(0, 8);
+  const featured = products.filter((p) => p.new_arrival);
+  const others = products.filter((p) => !p.new_arrival);
+  const recent = [...featured, ...others].slice(0, 8);
   const totalCategories = categoryTree.reduce((n, c) => n + 1 + c.children.length, 0);
 
   return (
@@ -49,7 +51,7 @@ export default async function HomePage() {
 
         <section className="ve-section">
           <div className="ve-section-head">
-            <h2>Recently added</h2>
+            <h2>{settings.featured_section_heading || "Featured Products"}</h2>
             <Link className="ve-link" href="/shop">View all →</Link>
           </div>
           <div className="ve-grid">

@@ -1,5 +1,6 @@
 import "./globals.css";
 import { getSettings } from "@/lib/data";
+import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 
 export const metadata = {
   metadataBase: new URL("https://veshop.com.sg"),
@@ -30,6 +31,7 @@ export default async function RootLayout({ children }) {
       <body>
         <style>{`:root{ --signal: ${accentColor}; }`}</style>
         {children}
+        <FloatingWhatsApp whatsappNumber={settings?.whatsapp_number} />
       </body>
     </html>
   );

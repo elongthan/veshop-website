@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { cleanText } from "@/lib/textClean";
 import sharp from "sharp";
 
 async function requireAdmin(supabase) {
@@ -58,13 +59,13 @@ export async function importProduct(item) {
       // later batch adds info like a fuller description) without
       // re-downloading photos it already has.
       const { error: updErr } = await supabase.from("products").update({
-        name: item.name,
+        name: cleanText(item.name),
         brand: item.brand || null,
         category: item.category || null,
         categories: item.category ? [item.category] : [],
         price: Number(item.price) || 0,
-        short_description: item.shortDescription || "",
-        description: item.description || ""
+        short_description: cleanText(item.shortDescription) || "",
+        description: cleanText(item.description) || ""
       }).eq("id", existing.id);
       if (updErr) return { ok: false, name: item.name, error: updErr.message };
       revalidatePath("/");
@@ -105,13 +106,13 @@ export async function importProduct(item) {
 
   const payload = {
     sku: item.sku || null,
-    name: item.name,
+    name: cleanText(item.name),
     brand: item.brand || null,
     category: item.category || null,
     categories: item.category ? [item.category] : [],
     price: Number(item.price) || 0,
-    short_description: item.shortDescription || "",
-    description: item.description || "",
+    short_description: cleanText(item.shortDescription) || "",
+    description: cleanText(item.description) || "",
     tags: [],
     image_url: uploadedUrls[0],
     images: uploadedUrls,

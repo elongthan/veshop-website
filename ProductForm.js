@@ -161,7 +161,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
               type="checkbox" checked={form.newArrival}
               onChange={(e) => setForm((f) => ({ ...f, newArrival: e.target.checked }))}
             />
-            Mark as new arrival
+            Mark as new arrival (also shows in "Featured Products" on the homepage)
           </label>
           <label className="ve-check" style={{ marginTop: 6 }}>
             <input

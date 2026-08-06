@@ -22,6 +22,7 @@ export default function SiteContentClient({ settings }) {
     hero_eyebrow: settings.hero_eyebrow || "",
     hero_title: settings.hero_title || "",
     hero_description: settings.hero_description || "",
+    featured_section_heading: settings.featured_section_heading || "Featured Products",
     footer_address: settings.footer_address || "",
     phone1: settings.phone1 || "",
     phone2: settings.phone2 || "",
@@ -163,6 +164,8 @@ export default function SiteContentClient({ settings }) {
         <textarea rows={2} value={form.hero_title} onChange={(e) => update("hero_title", e.target.value)} />
         <label className="ve-filter-label">Homepage description</label>
         <textarea rows={3} value={form.hero_description} onChange={(e) => update("hero_description", e.target.value)} />
+        <label className="ve-filter-label">Homepage "featured products" section heading</label>
+        <input value={form.featured_section_heading} onChange={(e) => update("featured_section_heading", e.target.value)} />
         <label className="ve-filter-label">Accent colour (links, highlights)</label>
         <div className="ve-color-row">
           <input type="color" value={form.accent_color} onChange={(e) => update("accent_color", e.target.value)} />

@@ -262,6 +262,9 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-footer h4{ color:#fff; font-family:'Oswald',sans-serif; font-size:14px; margin:0 0 8px; letter-spacing:.3px; line-height:1.2; }
 .ve-footer .ve-muted{ color:#9BA1A0; font-size:13px; line-height:1.6; }
 .ve-footer-whatsapp{ display:inline-flex; align-items:center; gap:5px; color:#25D366; text-decoration:none; }
+.ve-floating-whatsapp{ position:fixed; top:130px; right:18px; z-index:60; width:52px; height:52px; border-radius:50%; background:#25D366; color:#fff; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(0,0,0,.25); transition:transform .15s ease, box-shadow .15s ease; }
+.ve-floating-whatsapp:hover{ transform:scale(1.07); box-shadow:0 6px 20px rgba(0,0,0,.3); }
+@media (max-width: 640px){ .ve-floating-whatsapp{ top:auto; bottom:18px; right:14px; width:48px; height:48px; } }
 .ve-footer-whatsapp:hover{ color:#3CE87F; }
 .ve-footer-bottom{ border-top:1px solid #33383B; text-align:center; padding:16px; font-size:12px; color:#8B9190; }
 
