@@ -296,10 +296,28 @@ export async function addBrand(name) {
 export async function updateBrand(id, fields) {
   const supabase = await createClient();
   await requireAdmin(supabase);
+
+  let oldName = null;
+  if (fields.name) {
+    const { data: current } = await supabase.from("brands").select("name").eq("id", id).single();
+    oldName = current?.name;
+  }
+
   const { error } = await supabase.from("brands").update(fields).eq("id", id);
   if (error) throw new Error(error.message);
+
+  // Products store the brand as plain text, not a foreign key to this table,
+  // so a rename here wouldn't otherwise reach products already tagged with
+  // the old brand name.
+  if (oldName && fields.name && oldName !== fields.name) {
+    const { error: prodErr } = await supabase.from("products").update({ brand: fields.name }).eq("brand", oldName);
+    if (prodErr) throw new Error(prodErr.message);
+  }
+
   revalidatePath("/admin/taxonomy");
+  revalidatePath("/admin/products");
   revalidatePath("/");
+  revalidatePath("/shop");
 }
 
 export async function removeBrand(name) {
