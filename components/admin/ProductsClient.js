@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Search, AlertTriangle } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, AlertTriangle, Star } from "lucide-react";
 import { deleteProduct, deleteAllProducts } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
@@ -20,7 +20,10 @@ export default function ProductsClient({ products, categories, brands, watermark
   const list = products.filter((p) => {
     const matchesSearch = `${p.name} ${p.sku || ""} ${p.brand || ""}`.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = !categoryFilter || (p.categories || []).includes(categoryFilter);
-    const matchesStatus = !statusFilter || (statusFilter === "active" ? p.active !== false : p.active === false);
+    const matchesStatus = !statusFilter
+      || (statusFilter === "active" ? p.active !== false
+        : statusFilter === "inactive" ? p.active === false
+        : !!p.new_arrival);
     const matchesBrand = !brandFilter || p.brand === brandFilter;
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
   });
@@ -101,6 +104,7 @@ export default function ProductsClient({ products, categories, brands, watermark
           <option value="">All statuses</option>
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
+          <option value="new_arrival">New arrival</option>
         </select>
       </div>
       <div className="ve-admin-table">
@@ -128,6 +132,11 @@ export default function ProductsClient({ products, categories, brands, watermark
               {p.active !== false
                 ? <span className="ve-badge ve-badge-success">Active</span>
                 : <span className="ve-badge ve-badge-warning">Inactive</span>}
+              {p.new_arrival && (
+                <span className="ve-badge" style={{ marginLeft: 4, background: "#FFF3C4", color: "#7A5A00" }}>
+                  <Star size={11} fill="currentColor" /> New arrival
+                </span>
+              )}
             </span>
             <span className="ve-admin-actions">
               <button onClick={() => startEdit(p)} aria-label="Edit"><Pencil size={15} /></button>

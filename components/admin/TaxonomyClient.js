@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, Plus, Upload, Pencil } from "lucide-react";
+import { X, Plus, Upload, Pencil, Search } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   addBrand, removeBrand, updateBrand,
-  addCategory, removeCategory, updateCategory
+  addCategory, removeCategory, updateCategory,
+  scanOrphanedCategoryNames, mergeCategoryName
 } from "@/actions/products";
 
 async function uploadToSiteAssets(file, prefix) {
@@ -49,7 +50,34 @@ export default function TaxonomyClient({ categories, brands }) {
   const [renamingCat, setRenamingCat] = useState(null);
   const [renameValue, setRenameValue] = useState("");
   const [uploadingId, setUploadingId] = useState(null); // "cat-<id>" or "brand-<id>"
+  const [orphans, setOrphans] = useState(null);
+  const [orphanScanning, setOrphanScanning] = useState(false);
+  const [mergingName, setMergingName] = useState(null);
+  const [mergeTarget, setMergeTarget] = useState({});
   const router = useRouter();
+
+  const allCategoryNames = categories.map((c) => c.name);
+
+  async function scanOrphans() {
+    setOrphanScanning(true);
+    const result = await scanOrphanedCategoryNames();
+    setOrphans(result);
+    setOrphanScanning(false);
+  }
+
+  async function handleMerge(oldName) {
+    const newName = mergeTarget[oldName];
+    if (!newName) return;
+    setMergingName(oldName);
+    try {
+      await mergeCategoryName(oldName, newName);
+      setOrphans((os) => os.filter((o) => o.name !== oldName));
+      router.refresh();
+    } catch (err) {
+      alert("Could not merge: " + err.message);
+    }
+    setMergingName(null);
+  }
 
   const topLevel = categories.filter((c) => !c.parent_id);
   const childrenOf = (id) => categories.filter((c) => c.parent_id === id);
@@ -110,6 +138,7 @@ export default function TaxonomyClient({ categories, brands }) {
   }
 
   return (
+    <>
     <div className="ve-taxonomy">
       <div className="ve-taxonomy-col">
         <h3>Categories &amp; subcategories</h3>
@@ -207,5 +236,53 @@ export default function TaxonomyClient({ categories, brands }) {
         </form>
       </div>
     </div>
+
+    <div className="ve-admin-head" style={{ marginTop: 34, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+      <h2>Outdated category names on products</h2>
+    </div>
+    <p className="ve-muted" style={{ marginBottom: 14 }}>
+      Renaming a category above only changes the category label — products that were already tagged with
+      the old name keep it, since each product stores the category name directly rather than a link to it.
+      This finds any such leftover names and lets you merge them into a current category.
+    </p>
+    <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+      <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={scanOrphans} disabled={orphanScanning}>
+        <Search size={15} /> {orphanScanning ? "Scanning..." : "Scan products"}
+      </button>
+    </div>
+
+    {orphans && orphans.length === 0 && (
+      <div className="ve-empty" style={{ padding: "30px 0" }}>
+        <p>No outdated category names found.</p>
+      </div>
+    )}
+
+    {orphans?.length > 0 && (
+      <div className="ve-dup-group">
+        {orphans.map((o) => (
+          <div key={o.name} className="ve-admin-row" style={{ gridTemplateColumns: "2fr 1fr 100px" }}>
+            <span className="ve-admin-item">
+              <span><strong>{o.name}</strong><em>{o.count} product{o.count === 1 ? "" : "s"}</em></span>
+            </span>
+            <select
+              className="ve-select"
+              value={mergeTarget[o.name] || ""}
+              onChange={(e) => setMergeTarget((m) => ({ ...m, [o.name]: e.target.value }))}
+            >
+              <option value="">Merge into...</option>
+              {allCategoryNames.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <button
+              className="ve-btn ve-btn-sm"
+              disabled={!mergeTarget[o.name] || mergingName === o.name}
+              onClick={() => handleMerge(o.name)}
+            >
+              {mergingName === o.name ? "Merging..." : "Merge"}
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+    </>
   );
 }
