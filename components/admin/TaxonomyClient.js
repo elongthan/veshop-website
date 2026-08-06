@@ -7,7 +7,8 @@ import { createClient } from "@/lib/supabase/client";
 import {
   addBrand, removeBrand, updateBrand,
   addCategory, removeCategory, updateCategory,
-  scanOrphanedCategoryNames, mergeCategoryName
+  scanOrphanedCategoryNames, mergeCategoryName,
+  scanDuplicateCategoryTags, fixDuplicateCategoryTags
 } from "@/actions/products";
 
 async function uploadToSiteAssets(file, prefix) {
@@ -54,6 +55,9 @@ export default function TaxonomyClient({ categories, brands }) {
   const [orphanScanning, setOrphanScanning] = useState(false);
   const [mergingName, setMergingName] = useState(null);
   const [mergeTarget, setMergeTarget] = useState({});
+  const [dupeTags, setDupeTags] = useState(null);
+  const [dupeScanning, setDupeScanning] = useState(false);
+  const [dupeFixing, setDupeFixing] = useState(false);
   const router = useRouter();
 
   const allCategoryNames = categories.map((c) => c.name);
@@ -77,6 +81,22 @@ export default function TaxonomyClient({ categories, brands }) {
       alert("Could not merge: " + err.message);
     }
     setMergingName(null);
+  }
+
+  async function scanDupes() {
+    setDupeScanning(true);
+    const result = await scanDuplicateCategoryTags();
+    setDupeTags(result);
+    setDupeScanning(false);
+  }
+
+  async function fixAllDupes() {
+    if (!dupeTags?.length) return;
+    setDupeFixing(true);
+    await fixDuplicateCategoryTags(dupeTags.map((p) => p.id));
+    setDupeTags([]);
+    setDupeFixing(false);
+    router.refresh();
   }
 
   const topLevel = categories.filter((c) => !c.parent_id);
@@ -279,6 +299,47 @@ export default function TaxonomyClient({ categories, brands }) {
             >
               {mergingName === o.name ? "Merging..." : "Merge"}
             </button>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div className="ve-admin-head" style={{ marginTop: 34, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+      <h2>Duplicate category tags on a single product</h2>
+    </div>
+    <p className="ve-muted" style={{ marginBottom: 14 }}>
+      Finds products where the same category is listed more than once on that one product (e.g. "PPE, PPE,
+      Safety Shoes") — leftover from the original import. New saves already prevent this; this cleans up
+      existing ones.
+    </p>
+    <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+      <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={scanDupes} disabled={dupeScanning}>
+        <Search size={15} /> {dupeScanning ? "Scanning..." : "Scan products"}
+      </button>
+      {dupeTags?.length > 0 && (
+        <button className="ve-btn ve-btn-ghost ve-btn-sm" onClick={fixAllDupes} disabled={dupeFixing}>
+          {dupeFixing ? "Cleaning..." : `Clean up all ${dupeTags.length}`}
+        </button>
+      )}
+    </div>
+
+    {dupeTags && dupeTags.length === 0 && (
+      <div className="ve-empty" style={{ padding: "30px 0" }}>
+        <p>No duplicate category tags found.</p>
+      </div>
+    )}
+
+    {dupeTags?.length > 0 && (
+      <div className="ve-dup-group">
+        {dupeTags.map((p) => (
+          <div key={p.id} className="ve-admin-row" style={{ gridTemplateColumns: "1fr" }}>
+            <span className="ve-admin-item">
+              <img src={p.image_url || ""} alt="" />
+              <span>
+                <strong>{p.name}</strong>
+                <em>{p.categories.join(", ")}</em>
+              </span>
+            </span>
           </div>
         ))}
       </div>
