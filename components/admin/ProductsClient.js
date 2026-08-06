@@ -14,6 +14,7 @@ export default function ProductsClient({ products, categories, brands, watermark
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [brandFilter, setBrandFilter] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
   const [deletingAll, setDeletingAll] = useState(false);
   const router = useRouter();
 
@@ -26,6 +27,16 @@ export default function ProductsClient({ products, categories, brands, watermark
         : !!p.new_arrival);
     const matchesBrand = !brandFilter || p.brand === brandFilter;
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
+  }).sort((a, b) => {
+    switch (sortBy) {
+      case "name_asc": return a.name.localeCompare(b.name);
+      case "name_desc": return b.name.localeCompare(a.name);
+      case "price_asc": return (a.price || 0) - (b.price || 0);
+      case "price_desc": return (b.price || 0) - (a.price || 0);
+      case "oldest": return new Date(a.created_at) - new Date(b.created_at);
+      case "newest":
+      default: return new Date(b.created_at) - new Date(a.created_at);
+    }
   });
 
   function startAdd() { setEditing(null); setShowForm(true); }
@@ -105,6 +116,14 @@ export default function ProductsClient({ products, categories, brands, watermark
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
           <option value="new_arrival">New arrival</option>
+        </select>
+        <select className="ve-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ minWidth: 150 }}>
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name_asc">Name A–Z</option>
+          <option value="name_desc">Name Z–A</option>
+          <option value="price_asc">Price low–high</option>
+          <option value="price_desc">Price high–low</option>
         </select>
       </div>
       <div className="ve-admin-table">
