@@ -11,10 +11,33 @@ import {
   scanDuplicateCategoryTags, fixDuplicateCategoryTags
 } from "@/actions/products";
 
+// Logos are sometimes uploaded straight from a brand's press kit at huge
+// dimensions/file sizes. The site only ever displays them small, so shrink
+// oversized ones client-side before upload — keeps page load fast and keeps
+// the admin preview from looking oddly cropped or zoomed in.
+async function resizeImageIfLarge(file, maxDim = 480) {
+  if (!file.type.startsWith("image/") || file.type === "image/svg+xml") return file;
+
+  const bitmap = await createImageBitmap(file);
+  if (bitmap.width <= maxDim && bitmap.height <= maxDim) return file;
+
+  const scale = maxDim / Math.max(bitmap.width, bitmap.height);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+  if (!blob) return file;
+  return new File([blob], file.name.replace(/\.[^.]+$/, ".png"), { type: "image/png" });
+}
+
 async function uploadToSiteAssets(file, prefix) {
   const supabase = createClient();
-  const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2)}-${file.name}`;
-  const { error } = await supabase.storage.from("site-assets").upload(path, file, { upsert: false });
+  const resized = await resizeImageIfLarge(file);
+  const path = `${prefix}/${Date.now()}-${Math.random().toString(36).slice(2)}-${resized.name}`;
+  const { error } = await supabase.storage.from("site-assets").upload(path, resized, { upsert: false });
   if (error) throw error;
   const { data } = supabase.storage.from("site-assets").getPublicUrl(path);
   return data.publicUrl;
