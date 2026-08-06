@@ -177,11 +177,75 @@ export async function addCategory(name, parentId) {
 export async function updateCategory(id, fields) {
   const supabase = await createClient();
   await requireAdmin(supabase);
+
+  let oldName = null;
+  if (fields.name) {
+    const { data: current } = await supabase.from("categories").select("name").eq("id", id).single();
+    oldName = current?.name;
+  }
+
   const { error } = await supabase.from("categories").update(fields).eq("id", id);
   if (error) throw new Error(error.message);
+
+  // Products store category names as plain text, not a foreign key to this
+  // table, so renaming a category here wouldn't otherwise reach products
+  // that were already tagged with the old name — fix those up now.
+  if (oldName && fields.name && oldName !== fields.name) {
+    const { data: allProducts } = await supabase.from("products").select("id, category, categories");
+    const toFix = (allProducts || []).filter(
+      (p) => p.category === oldName || (p.categories || []).includes(oldName)
+    );
+    for (const p of toFix) {
+      await supabase.from("products").update({
+        category: p.category === oldName ? fields.name : p.category,
+        categories: (p.categories || []).map((c) => (c === oldName ? fields.name : c))
+      }).eq("id", p.id);
+    }
+  }
+
   revalidatePath("/admin/taxonomy");
+  revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidatePath("/");
+}
+
+export async function scanOrphanedCategoryNames() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const [{ data: cats }, { data: products }] = await Promise.all([
+    supabase.from("categories").select("name"),
+    supabase.from("products").select("category, categories")
+  ]);
+  const validNames = new Set((cats || []).map((c) => c.name));
+
+  const counts = {};
+  for (const p of products || []) {
+    const names = new Set([p.category, ...(p.categories || [])].filter(Boolean));
+    for (const n of names) {
+      if (!validNames.has(n)) counts[n] = (counts[n] || 0) + 1;
+    }
+  }
+  return Object.entries(counts).map(([name, count]) => ({ name, count }));
+}
+
+export async function mergeCategoryName(oldName, newName) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data: allProducts, error: fetchErr } = await supabase.from("products").select("id, category, categories");
+  if (fetchErr) throw new Error(fetchErr.message);
+
+  const toFix = (allProducts || []).filter(
+    (p) => p.category === oldName || (p.categories || []).includes(oldName)
+  );
+  for (const p of toFix) {
+    const { error } = await supabase.from("products").update({
+      category: p.category === oldName ? newName : p.category,
+      categories: (p.categories || []).map((c) => (c === oldName ? newName : c))
+    }).eq("id", p.id);
+    if (error) throw new Error(error.message);
+  }
+  revalidateCatalog();
+  return toFix.length;
 }
 
 export async function removeCategory(id) {
