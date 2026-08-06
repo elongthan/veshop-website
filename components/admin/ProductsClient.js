@@ -11,12 +11,19 @@ export default function ProductsClient({ products, categories, brands, watermark
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [brandFilter, setBrandFilter] = useState("");
   const [deletingAll, setDeletingAll] = useState(false);
   const router = useRouter();
 
-  const list = products.filter((p) =>
-    `${p.name} ${p.sku || ""} ${p.brand || ""}`.toLowerCase().includes(search.toLowerCase())
-  );
+  const list = products.filter((p) => {
+    const matchesSearch = `${p.name} ${p.sku || ""} ${p.brand || ""}`.toLowerCase().includes(search.toLowerCase());
+    const matchesCategory = !categoryFilter || (p.categories || []).includes(categoryFilter);
+    const matchesStatus = !statusFilter || (statusFilter === "active" ? p.active !== false : p.active === false);
+    const matchesBrand = !brandFilter || p.brand === brandFilter;
+    return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
+  });
 
   function startAdd() { setEditing(null); setShowForm(true); }
   function startEdit(p) { setEditing(p); setShowForm(true); }
@@ -67,7 +74,7 @@ export default function ProductsClient({ products, categories, brands, watermark
   return (
     <>
       <div className="ve-admin-head">
-        <h2>Products <span className="ve-muted">({products.length})</span></h2>
+        <h2>Products <span className="ve-muted">({list.length}{list.length !== products.length ? ` of ${products.length}` : ""})</span></h2>
         <div style={{ display: "flex", gap: 8 }}>
           {products.length > 0 && (
             <button className="ve-btn ve-btn-ghost ve-btn-sm ve-btn-danger" onClick={handleDeleteAll} disabled={deletingAll}>
@@ -77,9 +84,24 @@ export default function ProductsClient({ products, categories, brands, watermark
           <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={startAdd}><Plus size={15} /> Add item</button>
         </div>
       </div>
-      <div className="ve-search ve-search-inline" style={{ marginBottom: 14 }}>
-        <Search size={15} />
-        <input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} />
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 14 }}>
+        <div className="ve-search ve-search-inline" style={{ flex: "1 1 200px", marginBottom: 0 }}>
+          <Search size={15} />
+          <input placeholder="Search products..." value={search} onChange={(e) => setSearch(e.target.value)} />
+        </div>
+        <select className="ve-select" value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} style={{ minWidth: 150 }}>
+          <option value="">All categories</option>
+          {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <select className="ve-select" value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} style={{ minWidth: 150 }}>
+          <option value="">All brands</option>
+          {brands.map((b) => <option key={b} value={b}>{b}</option>)}
+        </select>
+        <select className="ve-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ minWidth: 130 }}>
+          <option value="">All statuses</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
       </div>
       <div className="ve-admin-table">
         <div className="ve-admin-row ve-admin-row-head">

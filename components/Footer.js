@@ -34,7 +34,7 @@ export default function Footer({ settings }) {
         </div>
         <div>
           <h4>{catalogHeading}</h4>
-          <p className="ve-muted">{catalogText}</p>
+          <p className="ve-muted" style={{ whiteSpace: "pre-line" }}>{catalogText}</p>
         </div>
       </div>
       <div className="ve-footer-bottom">
