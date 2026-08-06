@@ -50,6 +50,8 @@ export default function TaxonomyClient({ categories, brands }) {
   const [newBrand, setNewBrand] = useState("");
   const [renamingCat, setRenamingCat] = useState(null);
   const [renameValue, setRenameValue] = useState("");
+  const [renamingBrand, setRenamingBrand] = useState(null);
+  const [brandRenameValue, setBrandRenameValue] = useState("");
   const [uploadingId, setUploadingId] = useState(null); // "cat-<id>" or "brand-<id>"
   const [orphans, setOrphans] = useState(null);
   const [orphanScanning, setOrphanScanning] = useState(false);
@@ -157,6 +159,13 @@ export default function TaxonomyClient({ categories, brands }) {
     setUploadingId(null);
   }
 
+  async function handleRenameBrand(brand) {
+    if (!brandRenameValue.trim()) { setRenamingBrand(null); return; }
+    await updateBrand(brand.id, { name: brandRenameValue.trim() });
+    setRenamingBrand(null);
+    router.refresh();
+  }
+
   return (
     <>
     <div className="ve-taxonomy">
@@ -244,9 +253,23 @@ export default function TaxonomyClient({ categories, brands }) {
                   title="Change logo"
                   onFile={(file) => handleBrandLogoFile(b, file)}
                 />
-                <span>{b.name}</span>
+                {renamingBrand === b.id ? (
+                  <input
+                    className="ve-tax-rename-input"
+                    value={brandRenameValue}
+                    autoFocus
+                    onChange={(e) => setBrandRenameValue(e.target.value)}
+                    onBlur={() => handleRenameBrand(b)}
+                    onKeyDown={(e) => e.key === "Enter" && handleRenameBrand(b)}
+                  />
+                ) : (
+                  <span>{b.name}</span>
+                )}
               </div>
-              <button type="button" onClick={() => handleRemoveBrand(b.name)} aria-label="Remove"><X size={14} /></button>
+              <span className="ve-admin-actions">
+                <button type="button" onClick={() => { setRenamingBrand(b.id); setBrandRenameValue(b.name); }} aria-label="Rename"><Pencil size={13} /></button>
+                <button type="button" onClick={() => handleRemoveBrand(b.name)} aria-label="Remove"><X size={14} /></button>
+              </span>
             </div>
           ))}
         </div>
