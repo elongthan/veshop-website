@@ -128,7 +128,7 @@ export default function ProductsClient({ products, categories, brands, watermark
       </div>
       <div className="ve-admin-table">
         <div className="ve-admin-row ve-admin-row-head">
-          <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Sale price</span><span>Status</span><span></span>
+          <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Sale price</span><span>Status</span><span>Date added</span><span></span>
         </div>
         {list.map((p) => (
           <div className="ve-admin-row" key={p.id}>
@@ -156,6 +156,9 @@ export default function ProductsClient({ products, categories, brands, watermark
                   <Star size={11} fill="currentColor" /> New arrival
                 </span>
               )}
+            </span>
+            <span className="ve-muted" style={{ fontSize: 12.5 }}>
+              {p.created_at ? new Date(p.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" }) : "—"}
             </span>
             <span className="ve-admin-actions">
               <button onClick={() => startEdit(p)} aria-label="Edit"><Pencil size={15} /></button>
