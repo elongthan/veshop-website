@@ -20,7 +20,7 @@ export async function saveProduct(product) {
   await requireAdmin(supabase);
 
   const images = product.images || [];
-  const categories = product.categories || [];
+  const categories = [...new Set(product.categories || [])];
   if (images.length === 0) throw new Error("At least one product image is required.");
   if (categories.length === 0) throw new Error("Select at least one category.");
 
@@ -207,6 +207,33 @@ export async function updateCategory(id, fields) {
   revalidatePath("/admin/products");
   revalidatePath("/shop");
   revalidatePath("/");
+}
+
+export async function scanDuplicateCategoryTags() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase.from("products").select("id, name, categories, image_url");
+  if (error) throw new Error(error.message);
+  return (data || [])
+    .filter((p) => (p.categories || []).length !== new Set(p.categories || []).size)
+    .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url, categories: p.categories }));
+}
+
+export async function fixDuplicateCategoryTags(ids) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase.from("products").select("id, category, categories").in("id", ids);
+  if (error) throw new Error(error.message);
+  for (const p of data) {
+    const deduped = [...new Set(p.categories || [])];
+    const { error: updErr } = await supabase.from("products").update({
+      categories: deduped,
+      category: deduped.includes(p.category) ? p.category : deduped[0]
+    }).eq("id", p.id);
+    if (updErr) throw new Error(updErr.message);
+  }
+  revalidateCatalog();
+  return data.length;
 }
 
 export async function scanOrphanedCategoryNames() {
