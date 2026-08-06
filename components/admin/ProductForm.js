@@ -62,7 +62,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
     id: product.id,
     sku: product.sku || "",
     name: product.name || "",
-    brand: product.brand || brands[0] || "",
+    brand: product.brand || "",
     categories: product.categories?.length ? product.categories : (categories[0] ? [categories[0]] : []),
     price: product.price ?? "",
     salePrice: product.sale_price ?? "",
@@ -72,7 +72,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
     active: product.active !== false,
     images: product.images?.length ? product.images : []
   } : {
-    id: "", sku: "", name: "", brand: brands[0] || "",
+    id: "", sku: "", name: "", brand: "",
     categories: categories[0] ? [categories[0]] : [],
     price: "", salePrice: "", shortDescription: "", description: "", newArrival: false, active: true, images: []
   });
@@ -161,7 +161,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
               type="checkbox" checked={form.newArrival}
               onChange={(e) => setForm((f) => ({ ...f, newArrival: e.target.checked }))}
             />
-            Mark as new arrival
+            Mark as new arrival (also shows in "Featured Products" on the homepage)
           </label>
           <label className="ve-check" style={{ marginTop: 6 }}>
             <input
@@ -207,6 +207,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
 
           <label className="ve-filter-label">Brand</label>
           <select value={form.brand} onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))}>
+            <option value="">— No brand —</option>
             {brands.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
 

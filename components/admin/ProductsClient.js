@@ -25,7 +25,7 @@ export default function ProductsClient({ products, categories, brands, watermark
       || (statusFilter === "active" ? p.active !== false
         : statusFilter === "inactive" ? p.active === false
         : !!p.new_arrival);
-    const matchesBrand = !brandFilter || p.brand === brandFilter;
+    const matchesBrand = !brandFilter || (brandFilter === "__none__" ? !p.brand : p.brand === brandFilter);
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
   }).sort((a, b) => {
     switch (sortBy) {
@@ -109,6 +109,7 @@ export default function ProductsClient({ products, categories, brands, watermark
         </select>
         <select className="ve-select" value={brandFilter} onChange={(e) => setBrandFilter(e.target.value)} style={{ minWidth: 150 }}>
           <option value="">All brands</option>
+          <option value="__none__">No brand</option>
           {brands.map((b) => <option key={b} value={b}>{b}</option>)}
         </select>
         <select className="ve-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} style={{ minWidth: 130 }}>
