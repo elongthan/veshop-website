@@ -220,8 +220,8 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-tax-item{ display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:13.5px; margin-bottom:6px; }
 .ve-tax-item-sub{ margin-left:22px; background:var(--paper); }
 .ve-tax-item-main{ display:flex; align-items:center; gap:9px; min-width:0; }
-.ve-tax-icon-btn{ width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0; color:var(--muted); padding:0; }
-.ve-tax-icon-btn img{ width:100%; height:100%; object-fit:cover; }
+.ve-tax-icon-btn{ width:32px; height:32px; border-radius:6px; border:1px solid var(--line); background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden; flex-shrink:0; color:var(--muted); padding:2px; }
+.ve-tax-icon-btn img{ max-width:100%; max-height:100%; object-fit:contain; }
 .ve-tax-icon-spinner{ width:12px; height:12px; border-radius:50%; border:2px solid var(--line); border-top-color:var(--signal); animation:spin .7s linear infinite; }
 .ve-tax-rename-input{ border:1px solid var(--signal); border-radius:5px; padding:3px 6px; font-family:inherit; font-size:13.5px; }
 .ve-inline-add-cat{ flex-wrap:wrap; }
