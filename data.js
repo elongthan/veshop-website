@@ -14,7 +14,9 @@ export async function getSettings() {
 
 export async function getProducts({ includeInactive = false } = {}) {
   const supabase = createPublicClient();
-  let query = supabase.from("products").select("*").order("created_at", { ascending: false });
+  let query = supabase.from("products").select("*")
+    .order("sort_order", { ascending: true, nullsFirst: false })
+    .order("created_at", { ascending: false });
   if (!includeInactive) query = query.eq("active", true);
   const { data } = await query;
   return (data || []).map(normalizeProduct);
