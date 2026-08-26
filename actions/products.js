@@ -12,6 +12,8 @@ async function requireAdmin(supabase) {
 function revalidateCatalog() {
   revalidatePath("/");
   revalidatePath("/shop");
+  revalidatePath("/category/[slug]", "page");
+  revalidatePath("/product/[id]", "page");
   revalidatePath("/admin/products");
 }
 
