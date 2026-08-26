@@ -109,6 +109,16 @@ export async function scanPossiblyTruncated() {
     .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url, snippet: (p.short_description || "").slice(-60) }));
 }
 
+export async function updateProductOrder(orderedIds) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  for (let i = 0; i < orderedIds.length; i++) {
+    const { error } = await supabase.from("products").update({ sort_order: i }).eq("id", orderedIds[i]);
+    if (error) throw new Error(error.message);
+  }
+  revalidateCatalog();
+}
+
 export async function deleteProduct(id) {
   const supabase = await createClient();
   await requireAdmin(supabase);
