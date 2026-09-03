@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ShopClient from "@/components/ShopClient";
-import { getBrands, getCategories, getProducts, getSettings } from "@/lib/data";
+import { getBrands, getCategoryTree, getProducts, getSettings } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
@@ -11,9 +11,9 @@ export const metadata = {
 };
 
 export default async function ShopPage() {
-  const [products, categories, brands, settings] = await Promise.all([
+  const [products, categoryTree, brands, settings] = await Promise.all([
     getProducts(),
-    getCategories(),
+    getCategoryTree(),
     getBrands(),
     getSettings()
   ]);
@@ -23,7 +23,7 @@ export default async function ShopPage() {
       <Header settings={settings} />
       <ShopClient
         products={products}
-        categories={categories}
+        categoryTree={categoryTree}
         brands={brands}
         showPrices={settings.show_prices}
         settings={settings}
