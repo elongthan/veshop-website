@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { X, Plus, Upload, Pencil, Search } from "lucide-react";
+import { X, Plus, Upload, Pencil, Search, ArrowUp, ArrowDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import {
   addBrand, removeBrand, updateBrand,
-  addCategory, removeCategory, updateCategory,
+  addCategory, removeCategory, updateCategory, reorderCategories,
   scanOrphanedCategoryNames, mergeCategoryName,
   scanDuplicateCategoryTags, fixDuplicateCategoryTags
 } from "@/actions/products";
@@ -158,6 +158,20 @@ export default function TaxonomyClient({ categories, brands }) {
     setUploadingId(null);
   }
 
+  async function handleMoveCategory(group, id, direction) {
+    const ids = group.map((c) => c.id);
+    const index = ids.indexOf(id);
+    const target = index + direction;
+    if (target < 0 || target >= ids.length) return;
+    [ids[index], ids[target]] = [ids[target], ids[index]];
+    try {
+      await reorderCategories(ids);
+      router.refresh();
+    } catch (err) {
+      alert("Could not save order: " + err.message);
+    }
+  }
+
   async function handleAddBrand(e) {
     e.preventDefault();
     if (!newBrand.trim()) return;
@@ -219,6 +233,8 @@ export default function TaxonomyClient({ categories, brands }) {
                   )}
                 </div>
                 <span className="ve-admin-actions">
+                  <button type="button" onClick={() => handleMoveCategory(topLevel, cat.id, -1)} disabled={topLevel.findIndex((c) => c.id === cat.id) === 0} aria-label="Move up"><ArrowUp size={13} /></button>
+                  <button type="button" onClick={() => handleMoveCategory(topLevel, cat.id, 1)} disabled={topLevel.findIndex((c) => c.id === cat.id) === topLevel.length - 1} aria-label="Move down"><ArrowDown size={13} /></button>
                   <button type="button" onClick={() => { setRenamingCat(cat.id); setRenameValue(cat.name); }} aria-label="Rename"><Pencil size={13} /></button>
                   <button type="button" onClick={() => handleRemoveCategory(cat)} aria-label="Remove"><X size={14} /></button>
                 </span>
@@ -246,6 +262,8 @@ export default function TaxonomyClient({ categories, brands }) {
                     )}
                   </div>
                   <span className="ve-admin-actions">
+                    <button type="button" onClick={() => handleMoveCategory(childrenOf(cat.id), sub.id, -1)} disabled={childrenOf(cat.id).findIndex((c) => c.id === sub.id) === 0} aria-label="Move up"><ArrowUp size={13} /></button>
+                    <button type="button" onClick={() => handleMoveCategory(childrenOf(cat.id), sub.id, 1)} disabled={childrenOf(cat.id).findIndex((c) => c.id === sub.id) === childrenOf(cat.id).length - 1} aria-label="Move down"><ArrowDown size={13} /></button>
                     <button type="button" onClick={() => { setRenamingCat(sub.id); setRenameValue(sub.name); }} aria-label="Rename"><Pencil size={13} /></button>
                     <button type="button" onClick={() => handleRemoveCategory(sub)} aria-label="Remove"><X size={14} /></button>
                   </span>
