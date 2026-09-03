@@ -85,6 +85,7 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-img-fallback{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#B4B7AE; }
 .ve-corner-tag{ position:absolute; top:10px; left:0; background:var(--signal); color:#fff; font-size:11px; font-weight:600; padding:4px 10px; letter-spacing:.3px; }
 .ve-corner-tag-sale{ background:#D42020; }
+.ve-corner-tag-oos{ background:#4A4A4A; }
 .ve-price-sale{ display:flex; align-items:baseline; gap:8px; flex-wrap:wrap; }
 .ve-price-was{ text-decoration:line-through; color:var(--muted); font-weight:400; }
 .ve-card-price .ve-price-was{ font-size:12px; }
