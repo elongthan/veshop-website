@@ -106,6 +106,11 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-btn-ghost:hover{ background:var(--paper); }
 .ve-icon-btn-sm{ display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer; flex-shrink:0; }
 .ve-icon-btn-sm:hover{ color:var(--ink); background:var(--paper); }
+.ve-admin-edit-table{ border-collapse:collapse; width:100%; font-size:13px; }
+.ve-admin-edit-table th,.ve-admin-edit-table td{ border:1px solid var(--line); padding:6px; text-align:left; }
+.ve-admin-edit-table th{ background:var(--paper); font-weight:600; font-size:12px; color:var(--steel); }
+.ve-admin-edit-table input{ width:100%; border:1px solid transparent; background:#fff; padding:6px 8px; border-radius:5px; font-family:inherit; font-size:13px; }
+.ve-admin-edit-table input:focus{ border-color:var(--line); outline:none; }
 .ve-btn-sm{ padding:7px 12px; font-size:13px; }
 .ve-btn-danger{ color:#D42020; border-color:#D42020; }
 .ve-btn-danger:hover{ background:#FDECEC; }
