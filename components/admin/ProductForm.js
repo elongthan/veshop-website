@@ -246,81 +246,108 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
               every size on this one product rather than creating a separate product per size.
             </p>
 
-            {form.variantColumns.length > 0 && (
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 8 }}>
-                {form.variantColumns.map((col, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                    <input
-                      style={{ width: 140 }}
-                      value={col}
-                      placeholder={`Column ${i + 1} (e.g. Max Load)`}
-                      onChange={(e) => setForm((f) => ({
-                        ...f, variantColumns: f.variantColumns.map((c, ci) => ci === i ? e.target.value : c)
-                      }))}
-                    />
-                    <button
-                      type="button" className="ve-icon-btn-sm"
-                      onClick={() => setForm((f) => ({
-                        ...f,
-                        variantColumns: f.variantColumns.filter((_, ci) => ci !== i),
-                        variants: f.variants.map((v) => ({ ...v, values: v.values.filter((_, vi) => vi !== i) }))
-                      }))}
-                    ><X size={13} /></button>
-                  </div>
-                ))}
-              </div>
+            {form.variants.length > 0 && form.variantColumns.length === 0 && (
+              <p style={{ color: "var(--warn-fg)", background: "var(--warn-bg)", padding: "8px 10px", borderRadius: 6, fontSize: 12.5, marginBottom: 10 }}>
+                Add at least one column below (e.g. "Max Load") so these rows have a heading — right now
+                only the label and price would show on the site.
+              </p>
             )}
-            <button
-              type="button" className="ve-btn ve-btn-ghost ve-btn-sm" style={{ marginBottom: 12 }}
-              onClick={() => setForm((f) => ({
-                ...f,
-                variantColumns: [...f.variantColumns, ""],
-                variants: f.variants.map((v) => ({ ...v, values: [...(v.values || []), ""] }))
-              }))}
-            >+ Add column</button>
 
-            {form.variants.map((v, i) => (
-              <div key={i} style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", marginBottom: 6, padding: 8, background: "var(--paper)", borderRadius: 8 }}>
-                <input
-                  style={{ width: 110 }} placeholder="Label (e.g. STEP 3)" value={v.label}
-                  onChange={(e) => setForm((f) => ({
-                    ...f, variants: f.variants.map((row, ri) => ri === i ? { ...row, label: e.target.value } : row)
-                  }))}
-                />
-                {form.variantColumns.map((col, ci) => (
-                  <input
-                    key={ci} style={{ width: 130 }} placeholder={col || `Column ${ci + 1}`}
-                    value={v.values?.[ci] || ""}
-                    onChange={(e) => setForm((f) => ({
-                      ...f,
-                      variants: f.variants.map((row, ri) => {
-                        if (ri !== i) return row;
-                        const values = [...(row.values || [])];
-                        values[ci] = e.target.value;
-                        return { ...row, values };
-                      })
-                    }))}
-                  />
-                ))}
-                <input
-                  type="number" step="0.01" style={{ width: 90 }} placeholder="Price"
-                  value={v.price ?? ""}
-                  onChange={(e) => setForm((f) => ({
-                    ...f, variants: f.variants.map((row, ri) => ri === i ? { ...row, price: e.target.value } : row)
-                  }))}
-                />
-                <button
-                  type="button" className="ve-icon-btn-sm"
-                  onClick={() => setForm((f) => ({ ...f, variants: f.variants.filter((_, ri) => ri !== i) }))}
-                ><X size={13} /></button>
-              </div>
-            ))}
-            <button
-              type="button" className="ve-btn ve-btn-ghost ve-btn-sm"
-              onClick={() => setForm((f) => ({
-                ...f, variants: [...f.variants, { label: "", values: f.variantColumns.map(() => ""), price: "" }]
-              }))}
-            >+ Add variant row</button>
+            <div style={{ overflowX: "auto" }}>
+              <table className="ve-admin-edit-table">
+                <thead>
+                  <tr>
+                    <th style={{ minWidth: 110 }}>Label</th>
+                    {form.variantColumns.map((col, ci) => (
+                      <th key={ci} style={{ minWidth: 140 }}>
+                        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                          <input
+                            placeholder={`Column name (e.g. Max Load)`}
+                            value={col}
+                            onChange={(e) => setForm((f) => ({
+                              ...f, variantColumns: f.variantColumns.map((c, i) => i === ci ? e.target.value : c)
+                            }))}
+                          />
+                          <button
+                            type="button" className="ve-icon-btn-sm"
+                            title="Remove this column"
+                            onClick={() => setForm((f) => ({
+                              ...f,
+                              variantColumns: f.variantColumns.filter((_, i) => i !== ci),
+                              variants: f.variants.map((v) => ({ ...v, values: (v.values || []).filter((_, vi) => vi !== ci) }))
+                            }))}
+                          ><X size={13} /></button>
+                        </div>
+                      </th>
+                    ))}
+                    <th style={{ minWidth: 90 }}>Price</th>
+                    <th style={{ width: 32 }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {form.variants.map((v, ri) => (
+                    <tr key={ri}>
+                      <td>
+                        <input
+                          placeholder="e.g. STEP 3" value={v.label}
+                          onChange={(e) => setForm((f) => ({
+                            ...f, variants: f.variants.map((row, i) => i === ri ? { ...row, label: e.target.value } : row)
+                          }))}
+                        />
+                      </td>
+                      {form.variantColumns.map((_, ci) => (
+                        <td key={ci}>
+                          <input
+                            value={v.values?.[ci] || ""}
+                            onChange={(e) => setForm((f) => ({
+                              ...f,
+                              variants: f.variants.map((row, i) => {
+                                if (i !== ri) return row;
+                                const values = [...(row.values || [])];
+                                values[ci] = e.target.value;
+                                return { ...row, values };
+                              })
+                            }))}
+                          />
+                        </td>
+                      ))}
+                      <td>
+                        <input
+                          type="number" step="0.01" placeholder="0.00"
+                          value={v.price ?? ""}
+                          onChange={(e) => setForm((f) => ({
+                            ...f, variants: f.variants.map((row, i) => i === ri ? { ...row, price: e.target.value } : row)
+                          }))}
+                        />
+                      </td>
+                      <td>
+                        <button
+                          type="button" className="ve-icon-btn-sm"
+                          onClick={() => setForm((f) => ({ ...f, variants: f.variants.filter((_, i) => i !== ri) }))}
+                        ><X size={13} /></button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
+              <button
+                type="button" className="ve-btn ve-btn-ghost ve-btn-sm"
+                onClick={() => setForm((f) => ({
+                  ...f,
+                  variantColumns: [...f.variantColumns, ""],
+                  variants: f.variants.map((v) => ({ ...v, values: [...(v.values || []), ""] }))
+                }))}
+              >+ Add column</button>
+              <button
+                type="button" className="ve-btn ve-btn-ghost ve-btn-sm"
+                onClick={() => setForm((f) => ({
+                  ...f, variants: [...f.variants, { label: "", values: f.variantColumns.map(() => ""), price: "" }]
+                }))}
+              >+ Add variant row</button>
+            </div>
           </div>
 
           <label className="ve-filter-label">Tag words (comma separated)</label>
