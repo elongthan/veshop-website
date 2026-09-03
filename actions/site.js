@@ -26,6 +26,14 @@ export async function addBannerImage(url) {
   revalidatePath("/");
 }
 
+export async function reorderBannerImages(orderedUrls) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { error } = await supabase.from("settings").update({ banner_images: orderedUrls }).eq("id", 1);
+  if (error) throw new Error(error.message);
+  revalidatePath("/");
+}
+
 export async function removeBannerImage(url) {
   const supabase = await createClient();
   await requireAdmin(supabase);
