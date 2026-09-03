@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical } from "lucide-react";
-import { deleteProduct, deleteAllProducts, updateProductOrder } from "@/actions/products";
+import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff } from "lucide-react";
+import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 
@@ -18,8 +18,20 @@ export default function ProductsClient({ products, categories, brands, watermark
   const [deletingAll, setDeletingAll] = useState(false);
   const [dragOrder, setDragOrder] = useState(null); // array of ids, local drag state
   const [savingOrder, setSavingOrder] = useState(false);
+  const [togglingId, setTogglingId] = useState(null);
   const dragIndexRef = useRef(null);
   const router = useRouter();
+
+  async function handleToggleActive(p) {
+    setTogglingId(p.id);
+    try {
+      await toggleProductActive(p.id, p.active === false);
+      router.refresh();
+    } catch (err) {
+      alert("Could not update status: " + err.message);
+    }
+    setTogglingId(null);
+  }
 
   useEffect(() => {
     setDragOrder(null);
@@ -213,9 +225,16 @@ export default function ProductsClient({ products, categories, brands, watermark
                 : <span className="ve-muted">—</span>}
             </span>
             <span>
-              {p.active !== false
-                ? <span className="ve-badge ve-badge-success">Active</span>
-                : <span className="ve-badge ve-badge-warning">Inactive</span>}
+              <button
+                type="button"
+                onClick={() => handleToggleActive(p)}
+                disabled={togglingId === p.id}
+                className={`ve-badge ve-badge-toggle ${p.active !== false ? "ve-badge-success" : "ve-badge-warning"}`}
+                title={p.active !== false ? "Click to mark inactive (hides from website)" : "Click to mark active"}
+              >
+                {p.active !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+                {togglingId === p.id ? "..." : (p.active !== false ? "Active" : "Inactive")}
+              </button>
               {p.new_arrival && (
                 <span className="ve-badge" style={{ marginLeft: 4, background: "#FFF3C4", color: "#7A5A00" }}>
                   <Star size={11} fill="currentColor" /> New arrival
