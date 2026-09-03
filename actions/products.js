@@ -26,6 +26,15 @@ export async function saveProduct(product) {
   if (images.length === 0) throw new Error("At least one product image is required.");
   if (categories.length === 0) throw new Error("Select at least one category.");
 
+  const variantColumns = (product.variantColumns || []).map((c) => cleanText(c)).filter(Boolean);
+  const variants = (product.variants || [])
+    .filter((v) => v.label?.trim())
+    .map((v) => ({
+      label: cleanText(v.label),
+      values: (v.values || []).map((val) => cleanText(val) || ""),
+      price: v.price !== "" && v.price != null ? Number(v.price) : null
+    }));
+
   const payload = {
     sku: product.sku || null,
     name: cleanText(product.name),
@@ -36,6 +45,8 @@ export async function saveProduct(product) {
     sale_price: product.salePrice !== "" && product.salePrice != null ? Number(product.salePrice) : null,
     short_description: cleanText(product.shortDescription) || "",
     description: cleanText(product.description) || "",
+    variant_columns: variantColumns,
+    variants,
     tags: product.tags || [],
     image_url: images[0],
     images,
@@ -109,6 +120,14 @@ export async function scanPossiblyTruncated() {
       return text.length > 0 && !endsCleanly.test(text);
     })
     .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url, snippet: (p.short_description || "").slice(-60) }));
+}
+
+export async function toggleProductActive(id, active) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { error } = await supabase.from("products").update({ active }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateCatalog();
 }
 
 export async function updateProductOrder(orderedIds) {
