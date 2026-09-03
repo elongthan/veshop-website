@@ -69,6 +69,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
     shortDescription: product.short_description || "",
     description: product.description || "",
     newArrival: !!product.new_arrival,
+    outOfStock: !!product.out_of_stock,
     active: product.active !== false,
     images: product.images?.length ? product.images : [],
     variantColumns: product.variant_columns?.length ? product.variant_columns : [],
@@ -76,7 +77,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
   } : {
     id: "", sku: "", name: "", brand: "",
     categories: categories[0] ? [categories[0]] : [],
-    price: "", salePrice: "", shortDescription: "", description: "", newArrival: false, active: true, images: [],
+    price: "", salePrice: "", shortDescription: "", description: "", newArrival: false, outOfStock: false, active: true, images: [],
     variantColumns: [], variants: []
   });
   const [tagInput, setTagInput] = useState((product?.tags || []).join(", "));
@@ -165,6 +166,13 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
               onChange={(e) => setForm((f) => ({ ...f, newArrival: e.target.checked }))}
             />
             Mark as new arrival (also shows in "Featured Products" on the homepage)
+          </label>
+          <label className="ve-check" style={{ marginTop: 6 }}>
+            <input
+              type="checkbox" checked={form.outOfStock}
+              onChange={(e) => setForm((f) => ({ ...f, outOfStock: e.target.checked }))}
+            />
+            Out of stock (stays visible on the site, marked unavailable, instead of hiding it)
           </label>
           <label className="ve-check" style={{ marginTop: 6 }}>
             <input

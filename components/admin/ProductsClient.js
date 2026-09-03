@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff, ArrowRightLeft } from "lucide-react";
-import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive, bulkMoveCategory } from "@/actions/products";
+import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff, ArrowRightLeft, PackageX } from "lucide-react";
+import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive, toggleProductStock, bulkMoveCategory } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 
@@ -32,6 +32,17 @@ export default function ProductsClient({ products, categories, brands, watermark
       router.refresh();
     } catch (err) {
       alert("Could not update status: " + err.message);
+    }
+    setTogglingId(null);
+  }
+
+  async function handleToggleStock(p) {
+    setTogglingId(`stock-${p.id}`);
+    try {
+      await toggleProductStock(p.id, !p.out_of_stock);
+      router.refresh();
+    } catch (err) {
+      alert("Could not update stock status: " + err.message);
     }
     setTogglingId(null);
   }
@@ -73,6 +84,7 @@ export default function ProductsClient({ products, categories, brands, watermark
     const matchesStatus = !statusFilter
       || (statusFilter === "active" ? p.active !== false
         : statusFilter === "inactive" ? p.active === false
+        : statusFilter === "out_of_stock" ? !!p.out_of_stock
         : !!p.new_arrival);
     const matchesBrand = !brandFilter || (brandFilter === "__none__" ? !p.brand : p.brand === brandFilter);
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
@@ -206,6 +218,7 @@ export default function ProductsClient({ products, categories, brands, watermark
           <option value="active">Active</option>
           <option value="inactive">Inactive</option>
           <option value="new_arrival">New arrival</option>
+          <option value="out_of_stock">Out of stock</option>
         </select>
         <select className="ve-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ minWidth: 150 }}>
           <option value="newest">Newest first</option>
@@ -308,6 +321,17 @@ export default function ProductsClient({ products, categories, brands, watermark
                   <Star size={11} fill="currentColor" /> New arrival
                 </span>
               )}
+              <button
+                type="button"
+                onClick={() => handleToggleStock(p)}
+                disabled={togglingId === `stock-${p.id}`}
+                className="ve-badge ve-badge-toggle"
+                style={{ marginLeft: 4, background: p.out_of_stock ? "#FDE2E1" : "var(--paper)", color: p.out_of_stock ? "#A3231E" : "var(--muted)" }}
+                title={p.out_of_stock ? "Click to mark back in stock" : "Click to mark out of stock"}
+              >
+                <PackageX size={11} />
+                {togglingId === `stock-${p.id}` ? "..." : (p.out_of_stock ? "Out of stock" : "Mark out of stock")}
+              </button>
             </span>
             <span className="ve-muted" style={{ fontSize: 12.5 }}>
               {p.created_at ? new Date(p.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" }) : "—"}
