@@ -205,6 +205,17 @@ export async function toggleShowPrices(value) {
   revalidateCatalog();
 }
 
+export async function reorderCategories(orderedIds) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  for (let i = 0; i < orderedIds.length; i++) {
+    const { error } = await supabase.from("categories").update({ sort_order: i }).eq("id", orderedIds[i]);
+    if (error) throw new Error(error.message);
+  }
+  revalidateCatalog();
+  revalidatePath("/admin/taxonomy");
+}
+
 export async function addCategory(name, parentId) {
   const supabase = await createClient();
   await requireAdmin(supabase);
