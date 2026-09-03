@@ -86,7 +86,31 @@ export default async function ProductPage({ params }) {
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
             )}
             <p className="ve-product-desc">{product.short_description}</p>
-            {product.description && (
+            {product.variants?.length > 0 ? (
+              <div className="ve-product-full-desc">
+                <h3>Available sizes</h3>
+                <div className="ve-variant-table-wrap">
+                  <table className="ve-variant-table">
+                    <thead>
+                      <tr>
+                        <th></th>
+                        {(product.variant_columns || []).map((col, i) => <th key={i}>{col}</th>)}
+                        {settings.show_prices && <th>Price</th>}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {product.variants.map((v, i) => (
+                        <tr key={i}>
+                          <td><strong>{v.label}</strong></td>
+                          {(product.variant_columns || []).map((_, ci) => <td key={ci}>{v.values?.[ci] || "—"}</td>)}
+                          {settings.show_prices && <td>{v.price != null ? fmtPrice(v.price) : "—"}</td>}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : product.description && (
               <div className="ve-product-full-desc">
                 <h3>Description</h3>
                 <ul>
