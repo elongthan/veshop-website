@@ -7,10 +7,13 @@ export default function ProductCard({ product, showPrices }) {
   return (
     <Link href={`/product/${product.id}`} className="ve-card">
       <div className="ve-card-img">
-        {onSale && <span className="ve-corner-tag ve-corner-tag-sale">Sale</span>}
-        {!onSale && product.new_arrival && <span className="ve-corner-tag">New</span>}
+        {product.out_of_stock ? (
+          <span className="ve-corner-tag ve-corner-tag-oos">Out of Stock</span>
+        ) : onSale ? (
+          <span className="ve-corner-tag ve-corner-tag-sale">Sale</span>
+        ) : product.new_arrival && <span className="ve-corner-tag">New</span>}
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} loading="lazy" />
+          <img src={product.image_url} alt={product.name} loading="lazy" style={product.out_of_stock ? { opacity: 0.55 } : undefined} />
         ) : (
           <div className="ve-img-fallback"><ImageOff size={28} strokeWidth={1.4} /></div>
         )}
