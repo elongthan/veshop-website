@@ -19,7 +19,7 @@ export default async function HomePage() {
   const featured = products.filter((p) => p.new_arrival);
   const others = products.filter((p) => !p.new_arrival);
   const recent = [...featured, ...others].slice(0, 8);
-  const totalCategories = categoryTree.reduce((n, c) => n + 1 + c.children.length, 0);
+  const subCategoryCount = categoryTree.reduce((n, c) => n + c.children.length, 0);
 
   return (
     <>
@@ -40,7 +40,10 @@ export default async function HomePage() {
           <div className="ve-hero-panel" aria-hidden="true">
             <div className="ve-hero-stripe" />
             <div className="ve-hero-stat"><strong>{products.length}</strong><span>items listed</span></div>
-            <div className="ve-hero-stat"><strong>{totalCategories}</strong><span>categories</span></div>
+            <div className="ve-hero-stat"><strong>{categoryTree.length}</strong><span>categories</span></div>
+            {subCategoryCount > 0 && (
+              <div className="ve-hero-stat"><strong>{subCategoryCount}</strong><span>sub-categories</span></div>
+            )}
           </div>
         </section>
 
