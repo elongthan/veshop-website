@@ -72,6 +72,9 @@ export default async function ProductPage({ params }) {
           <div className="ve-product-info">
             <div className="ve-card-brand">{product.brand || "—"}</div>
             <h1>{product.name}</h1>
+            {product.out_of_stock && (
+              <span className="ve-badge ve-badge-warning" style={{ marginBottom: 10, display: "inline-flex" }}>Out of Stock</span>
+            )}
             <div className="ve-product-meta">
               <span>SKU {product.sku || "—"}</span>
               <span>{product.categories?.join(", ") || product.category}</span>
