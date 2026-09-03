@@ -240,6 +240,22 @@ export async function updateCategory(id, fields) {
   revalidatePath("/");
 }
 
+export async function bulkMoveCategory(ids, fromCategory, toCategory) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase.from("products").select("id, category, categories").in("id", ids);
+  if (error) throw new Error(error.message);
+
+  for (const p of data) {
+    const categories = [...new Set((p.categories || []).map((c) => c === fromCategory ? toCategory : c))];
+    const category = p.category === fromCategory ? toCategory : p.category;
+    const { error: updErr } = await supabase.from("products").update({ category, categories }).eq("id", p.id);
+    if (updErr) throw new Error(updErr.message);
+  }
+  revalidateCatalog();
+  return data.length;
+}
+
 export async function scanDuplicateCategoryTags() {
   const supabase = await createClient();
   await requireAdmin(supabase);
