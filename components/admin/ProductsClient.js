@@ -2,8 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff } from "lucide-react";
-import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive } from "@/actions/products";
+import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff, ArrowRightLeft } from "lucide-react";
+import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive, bulkMoveCategory } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 
@@ -19,6 +19,9 @@ export default function ProductsClient({ products, categories, brands, watermark
   const [dragOrder, setDragOrder] = useState(null); // array of ids, local drag state
   const [savingOrder, setSavingOrder] = useState(false);
   const [togglingId, setTogglingId] = useState(null);
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [moveTarget, setMoveTarget] = useState("");
+  const [moving, setMoving] = useState(false);
   const dragIndexRef = useRef(null);
   const router = useRouter();
 
@@ -35,7 +38,34 @@ export default function ProductsClient({ products, categories, brands, watermark
 
   useEffect(() => {
     setDragOrder(null);
+    setSelectedIds(new Set());
   }, [search, categoryFilter, statusFilter, brandFilter, sortBy]);
+
+  function toggleSelect(id) {
+    setSelectedIds((s) => {
+      const next = new Set(s);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll(ids) {
+    setSelectedIds((s) => s.size === ids.length ? new Set() : new Set(ids));
+  }
+
+  async function handleBulkMove() {
+    if (!moveTarget || selectedIds.size === 0) return;
+    setMoving(true);
+    try {
+      await bulkMoveCategory(Array.from(selectedIds), categoryFilter, moveTarget);
+      setSelectedIds(new Set());
+      setMoveTarget("");
+      router.refresh();
+    } catch (err) {
+      alert("Could not move products: " + err.message);
+    }
+    setMoving(false);
+  }
 
   const filtered = products.filter((p) => {
     const matchesSearch = `${p.name} ${p.sku || ""} ${p.brand || ""}`.toLowerCase().includes(search.toLowerCase());
@@ -194,8 +224,38 @@ export default function ProductsClient({ products, categories, brands, watermark
           {savingOrder && " Saving..."}
         </p>
       )}
+      {selectedIds.size > 0 && (
+        categoryFilter ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, padding: "8px 12px", background: "var(--paper)", borderRadius: 8, flexWrap: "wrap" }}>
+            <ArrowRightLeft size={15} className="ve-muted" />
+            <strong style={{ fontSize: 13.5 }}>{selectedIds.size} selected</strong>
+            <span className="ve-muted" style={{ fontSize: 13 }}>— move out of "{categoryFilter}" into:</span>
+            <select className="ve-select" value={moveTarget} onChange={(e) => setMoveTarget(e.target.value)} style={{ minWidth: 160 }}>
+              <option value="">Choose category...</option>
+              {categories.filter((c) => c !== categoryFilter).map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+            <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={handleBulkMove} disabled={!moveTarget || moving}>
+              {moving ? "Moving..." : "Move"}
+            </button>
+            <button className="ve-btn ve-btn-ghost ve-btn-sm" onClick={() => setSelectedIds(new Set())}>Clear</button>
+          </div>
+        ) : (
+          <p className="ve-muted" style={{ fontSize: 13, marginBottom: 12 }}>
+            {selectedIds.size} selected — filter by a specific category above first, so I know which
+            category to move these out of.
+          </p>
+        )
+      )}
       <div className="ve-admin-table">
         <div className="ve-admin-row ve-admin-row-head">
+          <span>
+            <input
+              type="checkbox"
+              checked={list.length > 0 && selectedIds.size === list.length}
+              onChange={() => toggleSelectAll(list.map((p) => p.id))}
+              aria-label="Select all"
+            />
+          </span>
           <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Sale price</span><span>Status</span><span>Date added</span><span></span>
         </div>
         {list.map((p, index) => (
@@ -208,6 +268,14 @@ export default function ProductsClient({ products, categories, brands, watermark
             onDrop={() => canDrag && handleDrop(index)}
             style={canDrag ? { cursor: "grab" } : undefined}
           >
+            <span>
+              <input
+                type="checkbox"
+                checked={selectedIds.has(p.id)}
+                onChange={() => toggleSelect(p.id)}
+                aria-label={`Select ${p.name}`}
+              />
+            </span>
             <span className="ve-admin-item">
               {canDrag && <GripVertical size={15} className="ve-muted" style={{ flexShrink: 0 }} />}
               <img src={p.image_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23EDEEE9'/%3E%3C/svg%3E"} alt="" />
