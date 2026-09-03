@@ -6,7 +6,7 @@ import { Search, Sliders, Package } from "lucide-react";
 import ProductCard from "@/components/ProductCard";
 import PrintCatalogButton from "@/components/PrintCatalogButton";
 
-function ShopInner({ products, categories, brands, showPrices, settings }) {
+function ShopInner({ products, categoryTree, brands, showPrices, settings }) {
   const searchParams = useSearchParams();
 
   const [query, setQuery] = useState(searchParams.get("q") || "");
@@ -101,7 +101,18 @@ function ShopInner({ products, categories, brands, showPrices, settings }) {
               <label className="ve-filter-label">Category</label>
               <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)} className="ve-select ve-select-block">
                 <option value="">All categories</option>
-                {categories.map((c) => <option key={c} value={c}>{c}</option>)}
+                {categoryTree.map((top) => (
+                  top.children.length > 0 ? (
+                    <optgroup key={top.id} label={top.name}>
+                      <option value={top.name}>{top.name}</option>
+                      {top.children.map((sub) => (
+                        <option key={sub.id} value={sub.name}>↳ {sub.name}</option>
+                      ))}
+                    </optgroup>
+                  ) : (
+                    <option key={top.id} value={top.name}>{top.name}</option>
+                  )
+                ))}
               </select>
             </div>
 
