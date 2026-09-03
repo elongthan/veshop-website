@@ -301,11 +301,16 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 
 .ve-logo-img{ height:40px; width:auto; max-width:120px; object-fit:contain; }
 
-.ve-banner{ position:relative; width:100%; aspect-ratio:16/5; max-height:420px; overflow:hidden; background:var(--graphite); }
-.ve-banner-slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .6s ease; }
-.ve-banner-dots{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; }
+.ve-banner{ position:relative; width:100%; aspect-ratio:3/1; max-height:460px; overflow:hidden; background:var(--graphite); }
+.ve-banner-slide{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; transition:opacity .6s ease; }
+.ve-banner-dots{ position:absolute; bottom:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; z-index:2; }
 .ve-banner-dots button{ width:9px; height:9px; border-radius:50%; border:none; background:rgba(255,255,255,.45); cursor:pointer; padding:0; }
 .ve-banner-dots button.active{ background:#fff; }
+.ve-banner-arrow{ position:absolute; top:50%; transform:translateY(-50%); z-index:2; width:38px; height:38px; border-radius:50%; border:none; background:rgba(0,0,0,.35); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s ease; }
+.ve-banner-arrow:hover{ background:rgba(0,0,0,.55); }
+.ve-banner-arrow-prev{ left:12px; }
+.ve-banner-arrow-next{ right:12px; }
+@media (max-width: 640px){ .ve-banner-arrow{ width:30px; height:30px; } }
 
 .ve-simple-page{ max-width:900px; margin:0 auto; padding:40px 24px 70px; }
 .ve-simple-page h1{ font-family:'Oswald',sans-serif; font-size:30px; margin-bottom:8px; }
@@ -330,6 +335,10 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-banner-manage-item{ position:relative; aspect-ratio:16/9; border-radius:8px; overflow:hidden; border:1px solid var(--line); }
 .ve-banner-manage-item img{ width:100%; height:100%; object-fit:cover; }
 .ve-banner-manage-item button{ position:absolute; top:4px; right:4px; background:rgba(20,20,20,.7); border:none; color:#fff; border-radius:50%; width:22px; height:22px; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.ve-banner-order-badge{ position:absolute; top:4px; left:4px; background:rgba(20,20,20,.7); color:#fff; font-size:11px; font-weight:600; width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
+.ve-banner-move-row{ position:absolute; bottom:4px; right:4px; display:flex; gap:4px; }
+.ve-banner-move-row button{ position:static; background:rgba(20,20,20,.7); }
+.ve-banner-move-row button:disabled{ opacity:.35; cursor:default; }
 .ve-banner-add{ aspect-ratio:16/9; border:1.5px dashed var(--line); border-radius:8px; background:var(--paper); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; cursor:pointer; color:var(--muted); font-size:12px; font-family:inherit; }
 
 @media print{
@@ -366,8 +375,6 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
   .ve-simple-page{ padding:26px 16px 50px; }
   .ve-footer-grid{ flex-direction:column; gap:24px; padding:30px 16px; }
   .ve-footer-grid > div{ flex:none; }
-  .ve-banner{ aspect-ratio:16/10; }
-  .ve-banner-slide{ object-fit:contain; background:var(--graphite); }
 
   .ve-header-row{ gap:8px; }
   .ve-menu-btn{ width:36px; height:36px; }
