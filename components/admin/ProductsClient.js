@@ -305,7 +305,7 @@ export default function ProductsClient({ products, categories, brands, watermark
                 ? <span className="ve-price-now" style={{ fontSize: 13.5 }}>{fmtPrice(p.sale_price)}</span>
                 : <span className="ve-muted">—</span>}
             </span>
-            <span>
+            <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
               <button
                 type="button"
                 onClick={() => handleToggleActive(p)}
@@ -317,21 +317,33 @@ export default function ProductsClient({ products, categories, brands, watermark
                 {togglingId === p.id ? "..." : (p.active !== false ? "Active" : "Inactive")}
               </button>
               {p.new_arrival && (
-                <span className="ve-badge" style={{ marginLeft: 4, background: "#FFF3C4", color: "#7A5A00" }}>
-                  <Star size={11} fill="currentColor" /> New arrival
+                <span className="ve-badge" style={{ background: "#FFF3C4", color: "#7A5A00" }} title="New arrival">
+                  <Star size={11} fill="currentColor" />
                 </span>
               )}
-              <button
-                type="button"
-                onClick={() => handleToggleStock(p)}
-                disabled={togglingId === `stock-${p.id}`}
-                className="ve-badge ve-badge-toggle"
-                style={{ marginLeft: 4, background: p.out_of_stock ? "#FDE2E1" : "var(--paper)", color: p.out_of_stock ? "#A3231E" : "var(--muted)" }}
-                title={p.out_of_stock ? "Click to mark back in stock" : "Click to mark out of stock"}
-              >
-                <PackageX size={11} />
-                {togglingId === `stock-${p.id}` ? "..." : (p.out_of_stock ? "Out of stock" : "Mark out of stock")}
-              </button>
+              {p.out_of_stock ? (
+                <button
+                  type="button"
+                  onClick={() => handleToggleStock(p)}
+                  disabled={togglingId === `stock-${p.id}`}
+                  className="ve-badge ve-badge-toggle"
+                  style={{ background: "#FDE2E1", color: "#A3231E" }}
+                  title="Click to mark back in stock"
+                >
+                  <PackageX size={11} />
+                  {togglingId === `stock-${p.id}` ? "..." : "Out of stock"}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleToggleStock(p)}
+                  disabled={togglingId === `stock-${p.id}`}
+                  className="ve-icon-btn-sm"
+                  title="Mark out of stock"
+                >
+                  <PackageX size={13} />
+                </button>
+              )}
             </span>
             <span className="ve-muted" style={{ fontSize: 12.5 }}>
               {p.created_at ? new Date(p.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" }) : "—"}
