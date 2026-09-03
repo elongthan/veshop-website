@@ -2,9 +2,9 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Upload, X } from "lucide-react";
+import { Upload, X, ArrowUp, ArrowDown } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { addBannerImage, removeBannerImage, updateSiteContent } from "@/actions/site";
+import { addBannerImage, removeBannerImage, reorderBannerImages, updateSiteContent } from "@/actions/site";
 
 async function uploadToSiteAssets(file, prefix) {
   const supabase = createClient();
@@ -114,6 +114,20 @@ export default function SiteContentClient({ settings }) {
     router.refresh();
   }
 
+  async function handleMoveBanner(index, direction) {
+    const next = [...banners];
+    const target = index + direction;
+    if (target < 0 || target >= next.length) return;
+    [next[index], next[target]] = [next[target], next[index]];
+    setBanners(next);
+    try {
+      await reorderBannerImages(next);
+      router.refresh();
+    } catch (err) {
+      alert("Could not save order: " + err.message);
+    }
+  }
+
   return (
     <div className="ve-site-content">
       <div className="ve-admin-head"><h2>Site content</h2></div>
@@ -136,12 +150,17 @@ export default function SiteContentClient({ settings }) {
 
       <div className="ve-settings" style={{ marginBottom: 20 }}>
         <h3>Homepage banners</h3>
-        <p className="ve-hint">Auto-advances every 5 seconds when there's more than one image.</p>
+        <p className="ve-hint">Auto-advances every 5 seconds when there's more than one image. Order below is the order they appear — use the arrows to rearrange.</p>
         <div className="ve-banner-manage-grid">
-          {banners.map((url) => (
+          {banners.map((url, i) => (
             <div key={url} className="ve-banner-manage-item">
               <img src={url} alt="" />
-              <button type="button" onClick={() => handleRemoveBanner(url)}><X size={14} /></button>
+              <span className="ve-banner-order-badge">{i + 1}</span>
+              <button type="button" onClick={() => handleRemoveBanner(url)} aria-label="Remove"><X size={14} /></button>
+              <div className="ve-banner-move-row">
+                <button type="button" onClick={() => handleMoveBanner(i, -1)} disabled={i === 0} aria-label="Move earlier"><ArrowUp size={13} /></button>
+                <button type="button" onClick={() => handleMoveBanner(i, 1)} disabled={i === banners.length - 1} aria-label="Move later"><ArrowDown size={13} /></button>
+              </div>
             </div>
           ))}
           <button type="button" className="ve-banner-add" onClick={() => bannerRef.current?.click()} disabled={uploadingBanner}>
