@@ -51,6 +51,7 @@ export async function saveProduct(product) {
     image_url: images[0],
     images,
     new_arrival: !!product.newArrival,
+    out_of_stock: !!product.outOfStock,
     active: product.active !== false
   };
 
@@ -120,6 +121,14 @@ export async function scanPossiblyTruncated() {
       return text.length > 0 && !endsCleanly.test(text);
     })
     .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url, snippet: (p.short_description || "").slice(-60) }));
+}
+
+export async function toggleProductStock(id, outOfStock) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { error } = await supabase.from("products").update({ out_of_stock: outOfStock }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidateCatalog();
 }
 
 export async function toggleProductActive(id, active) {
