@@ -37,6 +37,7 @@ async function watermarkBuffer(imageBuffer, logoUrl) {
 
     return await base
       .composite([{ input: fadedLogo, gravity: "center" }])
+      .flatten({ background: "#ffffff" })
       .jpeg({ quality: 82 })
       .toBuffer();
   } catch (e) {
