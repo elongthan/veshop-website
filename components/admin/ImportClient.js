@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, CheckCircle2, XCircle, SkipForward, FileJson, RefreshCw } from "lucide-react";
 import { importProduct } from "@/actions/import";
+import { addCategory } from "@/actions/products";
 
 const PLACEHOLDER = `[
   {
@@ -20,11 +21,12 @@ const PLACEHOLDER = `[
   }
 ]`;
 
-export default function ImportClient() {
+export default function ImportClient({ categories = [] }) {
   const [text, setText] = useState("");
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState([]);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
+  const [defaultCategory, setDefaultCategory] = useState("");
   const router = useRouter();
 
   function handleFile(e) {
@@ -49,10 +51,15 @@ export default function ImportClient() {
     setResults([]);
     setProgress({ done: 0, total: items.length });
 
+    const trimmedDefault = defaultCategory.trim();
+    if (trimmedDefault && !categories.includes(trimmedDefault)) {
+      try { await addCategory(trimmedDefault); } catch (e) { /* likely already exists — fine */ }
+    }
+
     const nextResults = [];
     for (const item of items) {
       try {
-        const r = await importProduct(item);
+        const r = await importProduct(item, { defaultCategory: trimmedDefault || undefined });
         nextResults.push(r);
       } catch (e) {
         nextResults.push({ ok: false, name: item.name, error: e.message });
@@ -70,10 +77,30 @@ export default function ImportClient() {
       <p className="ve-muted" style={{ marginBottom: 14 }}>
         Paste a JSON list of products below (Claude will prepare these for you in chat). Each needs at least
         a name, price and imageUrls (a list — one or more photos). Photos are automatically watermarked with
-        your logo if one's set in Site content. Products with a SKU that already exists get their text
-        details (name, price, description, category) refreshed rather than re-imported — their existing
-        photos are left alone, so it's safe to re-run a batch.
+        your logo if one's set in Site content. Products that already exist (matched by SKU, or by name when
+        there's no SKU) are left completely untouched — so anything you've edited since, like a re-categorized
+        or renamed product, is never overwritten. This makes it safe to paste your <strong>whole current
+        catalog</strong> from the old site any time — only genuinely new products get created.
       </p>
+      <label className="ve-filter-label">Default category for newly-created products (optional)</label>
+      <input
+        style={{ marginBottom: 14, maxWidth: 260 }}
+        placeholder="e.g. Others"
+        value={defaultCategory}
+        onChange={(e) => setDefaultCategory(e.target.value)}
+        disabled={running}
+        list="ve-import-category-list"
+      />
+      <datalist id="ve-import-category-list">
+        {categories.map((c) => <option key={c} value={c} />)}
+      </datalist>
+      {defaultCategory.trim() && (
+        <p className="ve-muted" style={{ marginTop: -10, marginBottom: 14, fontSize: 12.5 }}>
+          Every new product this run creates will be filed under "{defaultCategory.trim()}" regardless of
+          any category in the pasted data — handy for sweeping new items in first, then sorting them into
+          the right categories afterwards. Leave blank to use whatever category is in the data.
+        </p>
+      )}
       <label className="ve-btn ve-btn-ghost ve-btn-sm" style={{ display: "inline-flex", marginBottom: 10, cursor: "pointer" }}>
         <FileJson size={15} /> Load from .json file
         <input type="file" accept=".json,application/json" hidden onChange={handleFile} disabled={running} />
