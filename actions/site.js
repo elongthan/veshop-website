@@ -80,10 +80,12 @@ export async function sendContactEnquiry(formData) {
     });
     if (!res.ok) {
       const body = await res.text();
+      console.error("Resend API error:", res.status, body);
       throw new Error(body);
     }
     return { ok: true };
   } catch (err) {
+    console.error("Contact form send failed:", err);
     return { ok: false, error: "Could not send right now. Please try again or email us directly." };
   }
 }
