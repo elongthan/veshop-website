@@ -44,33 +44,38 @@ async function watermarkBuffer(imageBuffer, logoUrl) {
   }
 }
 
-export async function importProduct(item) {
+export async function importProduct(item, opts = {}) {
   const supabase = await createClient();
   await requireAdmin(supabase);
 
   if (item.sku) {
     const { data: existing } = await supabase
       .from("products")
-      .select("id, images")
+      .select("id")
       .eq("sku", item.sku)
       .maybeSingle();
     if (existing) {
-      // Product already exists — refresh its text fields (useful when a
-      // later batch adds info like a fuller description) without
-      // re-downloading photos it already has.
-      const { error: updErr } = await supabase.from("products").update({
-        name: cleanText(item.name),
-        brand: item.brand || null,
-        category: item.category || null,
-        categories: item.category ? [item.category] : [],
-        price: Number(item.price) || 0,
-        short_description: cleanText(item.shortDescription) || "",
-        description: cleanText(item.description) || ""
-      }).eq("id", existing.id);
-      if (updErr) return { ok: false, name: item.name, error: updErr.message };
-      revalidatePath("/");
-      revalidatePath("/shop");
-      return { ok: true, updated: true, name: item.name };
+      // Product already exists — leave it alone entirely. Earlier this
+      // refreshed text fields on every re-import, but that meant any manual
+      // edit since (a renamed category, a corrected description, a
+      // re-priced item) would get silently overwritten back to whatever the
+      // old site currently says. Once a product is here, only admin edits
+      // should change it.
+      return { ok: true, skipped: true, name: item.name };
+    }
+  } else if (item.name) {
+    // No SKU to match on. Match against import_name — the name recorded at
+    // the moment this product was first imported — rather than the current
+    // display name, since that may have been edited since. Products
+    // imported before this field existed have no import_name yet, so also
+    // fall back to matching the current name for those.
+    const trimmedName = item.name.trim();
+    const { data: byImportName } = await supabase
+      .from("products").select("id").ilike("import_name", trimmedName).maybeSingle();
+    const { data: byName } = byImportName ? { data: null } : await supabase
+      .from("products").select("id").ilike("name", trimmedName).maybeSingle();
+    if (byImportName || byName) {
+      return { ok: true, skipped: true, name: item.name };
     }
   }
 
@@ -104,12 +109,15 @@ export async function importProduct(item) {
     return { ok: false, name: item.name, error: "No image could be downloaded" };
   }
 
+  const category = opts.defaultCategory || item.category || null;
+
   const payload = {
     sku: item.sku || null,
     name: cleanText(item.name),
+    import_name: item.name?.trim() || null,
     brand: item.brand || null,
-    category: item.category || null,
-    categories: item.category ? [item.category] : [],
+    category,
+    categories: category ? [category] : [],
     price: Number(item.price) || 0,
     short_description: cleanText(item.shortDescription) || "",
     description: cleanText(item.description) || "",
