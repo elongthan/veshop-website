@@ -85,6 +85,7 @@ export default function ProductsClient({ products, categories, brands, watermark
       || (statusFilter === "active" ? p.active !== false
         : statusFilter === "inactive" ? p.active === false
         : statusFilter === "out_of_stock" ? !!p.out_of_stock
+        : statusFilter === "zero_price" ? (!p.price || Number(p.price) === 0)
         : !!p.new_arrival);
     const matchesBrand = !brandFilter || (brandFilter === "__none__" ? !p.brand : p.brand === brandFilter);
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
@@ -219,6 +220,7 @@ export default function ProductsClient({ products, categories, brands, watermark
           <option value="inactive">Inactive</option>
           <option value="new_arrival">New arrival</option>
           <option value="out_of_stock">Out of stock</option>
+          <option value="zero_price">$0.00 price</option>
         </select>
         <select className="ve-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ minWidth: 150 }}>
           <option value="newest">Newest first</option>
@@ -299,7 +301,9 @@ export default function ProductsClient({ products, categories, brands, watermark
             </span>
             <span>{p.brand || "—"}</span>
             <span>{p.categories?.join(", ") || "—"}</span>
-            <span>{fmtPrice(p.price)}</span>
+            <span style={!p.price || Number(p.price) === 0 ? { color: "#D42020", fontWeight: 600 } : undefined}>
+              {fmtPrice(p.price)}
+            </span>
             <span>
               {p.sale_price != null && Number(p.sale_price) < Number(p.price)
                 ? <span className="ve-price-now" style={{ fontSize: 13.5 }}>{fmtPrice(p.sale_price)}</span>
