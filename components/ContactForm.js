@@ -3,16 +3,25 @@
 import { useState } from "react";
 import { sendContactEnquiry } from "@/actions/site";
 
+const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024; // 4MB — keeps email + serverless request size safe
+
 export default function ContactForm({ contactEmail }) {
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [errorMsg, setErrorMsg] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setStatus("sending");
     setErrorMsg("");
-    const formData = new FormData(e.target);
 
+    const formData = new FormData(e.target);
+    const file = formData.get("attachment");
+    if (file && file.size > MAX_ATTACHMENT_BYTES) {
+      setStatus("error");
+      setErrorMsg("That attachment is too large — please keep it under 4MB.");
+      return;
+    }
+
+    setStatus("sending");
     const result = await sendContactEnquiry(formData);
 
     if (result.ok) {
@@ -62,6 +71,9 @@ export default function ContactForm({ contactEmail }) {
       <input name="phone" />
       <label className="ve-filter-label">Message *</label>
       <textarea name="message" rows={5} required />
+      <label className="ve-filter-label">Attachment (optional)</label>
+      <input name="attachment" type="file" accept="image/*,.pdf,.doc,.docx" />
+      <p className="ve-muted" style={{ fontSize: 12, marginTop: -6 }}>Max 4MB — images, PDF or Word documents.</p>
       {status === "error" && <div className="ve-form-error">{errorMsg}</div>}
       <button className="ve-btn ve-btn-primary" type="submit" disabled={status === "sending"}>
         {status === "sending" ? "Sending..." : "Send enquiry"}
