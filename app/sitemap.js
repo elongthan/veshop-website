@@ -9,7 +9,11 @@ export default async function sitemap() {
 
   const staticPages = [
     { url: `${base}/`, changeFrequency: "weekly", priority: 1 },
-    { url: `${base}/shop`, changeFrequency: "daily", priority: 0.9 }
+    { url: `${base}/shop`, changeFrequency: "daily", priority: 0.9 },
+    { url: `${base}/about`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/contact`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${base}/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${base}/terms`, changeFrequency: "yearly", priority: 0.2 }
   ];
 
   const categoryPages = categories.map((c) => ({
