@@ -36,14 +36,6 @@ export default async function ContactPage() {
             </div>
             {settings.footer_address && (
               <div className="ve-contact-map">
-                <a
-                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.footer_address)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="ve-link"
-                >
-                  Open in Google Maps →
-                </a>
                 <iframe
                   title="Our location"
                   src={`https://www.google.com/maps?q=${encodeURIComponent(settings.footer_address)}&output=embed`}
