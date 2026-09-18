@@ -49,6 +49,7 @@ export async function sendContactEnquiry(formData) {
   const email = formData.get("email");
   const phone = formData.get("phone");
   const message = formData.get("message");
+  const attachment = formData.get("attachment");
 
   if (!name || !email || !message) {
     return { ok: false, error: "Please fill in your name, email and message." };
@@ -63,6 +64,12 @@ export async function sendContactEnquiry(formData) {
     return { ok: false, fallback: true };
   }
 
+  let attachments;
+  if (attachment && typeof attachment === "object" && attachment.size > 0) {
+    const buffer = Buffer.from(await attachment.arrayBuffer());
+    attachments = [{ filename: attachment.name, content: buffer.toString("base64") }];
+  }
+
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -75,7 +82,8 @@ export async function sendContactEnquiry(formData) {
         to: [toEmail],
         reply_to: email,
         subject: `Website enquiry from ${name}`,
-        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "—"}\n\n${message}`
+        text: `Name: ${name}\nEmail: ${email}\nPhone: ${phone || "—"}\n\n${message}`,
+        ...(attachments ? { attachments } : {})
       })
     });
     if (!res.ok) {
