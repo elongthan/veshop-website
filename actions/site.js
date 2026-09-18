@@ -71,7 +71,7 @@ export async function sendContactEnquiry(formData) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "VeShop website <onboarding@resend.dev>",
+        from: "VeShop website <enquiries@veshop.com.sg>",
         to: [toEmail],
         reply_to: email,
         subject: `Website enquiry from ${name}`,
