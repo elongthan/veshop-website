@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/serviceRole";
+import { requireFullAdmin } from "@/lib/adminRole";
 import { revalidatePath } from "next/cache";
 
 async function requireAdmin(supabase) {
@@ -27,20 +28,29 @@ export async function resolveUsernameToEmail(username) {
   return data.user.email;
 }
 
+export async function getMyRole() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase.from("admin_profiles").select("role").eq("user_id", user.id).maybeSingle();
+  return data?.role || "admin";
+}
+
 export async function listAdmins() {
   const supabase = await createClient();
-  await requireAdmin(supabase);
-  const { data } = await supabase.from("admin_profiles").select("user_id, username, created_at").order("created_at");
+  await requireFullAdmin(supabase);
+  const { data } = await supabase.from("admin_profiles").select("user_id, username, role, created_at").order("created_at");
   return data || [];
 }
 
-export async function createAdmin({ username, email, password }) {
+export async function createAdmin({ username, email, password, role }) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
 
   if (!username?.trim() || !email?.trim() || !password) {
     throw new Error("Username, email and password are all required.");
   }
+  const finalRole = role === "admin" ? "admin" : "staff";
 
   const admin = createServiceRoleClient();
 
@@ -60,15 +70,27 @@ export async function createAdmin({ username, email, password }) {
 
   const { error: profileErr } = await admin
     .from("admin_profiles")
-    .insert({ user_id: created.user.id, username: username.trim() });
+    .insert({ user_id: created.user.id, username: username.trim(), role: finalRole });
   if (profileErr) throw new Error(profileErr.message);
 
   revalidatePath("/admin/users");
 }
 
+export async function updateAdminRole(userId, role) {
+  const supabase = await createClient();
+  const currentUser = await requireFullAdmin(supabase);
+  if (currentUser.id === userId) throw new Error("You can't change your own role.");
+
+  const finalRole = role === "admin" ? "admin" : "staff";
+  const admin = createServiceRoleClient();
+  const { error } = await admin.from("admin_profiles").update({ role: finalRole }).eq("user_id", userId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/users");
+}
+
 export async function removeAdmin(userId) {
   const supabase = await createClient();
-  const currentUser = await requireAdmin(supabase);
+  const currentUser = await requireFullAdmin(supabase);
   if (currentUser.id === userId) throw new Error("You can't remove your own account while signed in as it.");
 
   const admin = createServiceRoleClient();
