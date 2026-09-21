@@ -7,7 +7,7 @@ import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActi
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 
-export default function ProductsClient({ products, categories, brands, watermarkLogo }) {
+export default function ProductsClient({ products, categories, brands, watermarkLogo, role }) {
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
@@ -192,7 +192,7 @@ export default function ProductsClient({ products, categories, brands, watermark
       <div className="ve-admin-head">
         <h2>Products <span className="ve-muted">({list.length}{list.length !== products.length ? ` of ${products.length}` : ""})</span></h2>
         <div style={{ display: "flex", gap: 8 }}>
-          {products.length > 0 && (
+          {products.length > 0 && role !== "staff" && (
             <button className="ve-btn ve-btn-ghost ve-btn-sm ve-btn-danger" onClick={handleDeleteAll} disabled={deletingAll}>
               <AlertTriangle size={14} /> {deletingAll ? "Deleting..." : "Delete all products"}
             </button>
