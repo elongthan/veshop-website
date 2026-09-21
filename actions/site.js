@@ -46,6 +46,13 @@ export async function removeBannerImage(url) {
 }
 
 export async function sendContactEnquiry(formData) {
+  // Honeypot — a real visitor never sees or fills this field (hidden via
+  // CSS), so anything with a value here is an automated submission. Return
+  // a fake success rather than an error, so a bot has no signal to adapt to.
+  if (formData.get("website")) {
+    return { ok: true };
+  }
+
   const name = formData.get("name");
   const email = formData.get("email");
   const phone = formData.get("phone");
