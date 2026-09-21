@@ -57,6 +57,9 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-hero-stat{ display:flex; align-items:baseline; gap:8px; color:#fff; }
 .ve-hero-stat strong{ font-family:'Oswald',sans-serif; font-size:30px; }
 .ve-hero-stat span{ color:#B8BEC2; font-size:13px; }
+.ve-intro{ max-width:900px; margin:0 auto; padding:10px 24px 50px; }
+.ve-intro h1{ font-family:'Oswald',sans-serif; font-size:32px; line-height:1.15; margin-bottom:14px; font-weight:600; }
+.ve-intro p{ color:var(--muted); font-size:15px; line-height:1.65; }
 
 .ve-section{ max-width:1200px; margin:0 auto; padding:36px 24px; }
 .ve-section-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:18px; }
@@ -368,6 +371,7 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
   .ve-hero h1{ font-size:28px; }
   .ve-hero-actions{ flex-wrap:wrap; }
   .ve-section{ padding:26px 16px; }
+  .ve-intro{ padding:6px 16px 40px; }
   .ve-shop{ padding:20px 16px 40px; }
   .ve-shop-body{ grid-template-columns:1fr; }
   .ve-filters{ position:static; }
