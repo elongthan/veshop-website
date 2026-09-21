@@ -13,7 +13,7 @@ export default function AdminSidebar({ role }) {
   async function signOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
-    router.push("/");
+    router.push("/admin/login");
     router.refresh();
   }
 
