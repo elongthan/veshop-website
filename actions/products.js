@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { cleanText, hasUncleanText } from "@/lib/textClean";
+import { requireFullAdmin } from "@/lib/adminRole";
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -159,7 +160,7 @@ export async function deleteProduct(id) {
 
 export async function deleteAllProducts() {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   // Deletes every product row. Storage photos aren't removed automatically —
   // they're harmless left behind, but you can ignore that for now.
   const { error } = await supabase.from("products").delete().gte("created_at", "1900-01-01");
@@ -199,7 +200,7 @@ export async function deleteProducts(ids) {
 
 export async function toggleShowPrices(value) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("settings").update({ show_prices: value }).eq("id", 1);
   if (error) throw new Error(error.message);
   revalidateCatalog();
@@ -207,7 +208,7 @@ export async function toggleShowPrices(value) {
 
 export async function reorderCategories(orderedIds) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   for (let i = 0; i < orderedIds.length; i++) {
     const { error } = await supabase.from("categories").update({ sort_order: i }).eq("id", orderedIds[i]);
     if (error) throw new Error(error.message);
@@ -218,7 +219,7 @@ export async function reorderCategories(orderedIds) {
 
 export async function addCategory(name, parentId) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("categories").insert({ name, parent_id: parentId || null });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
@@ -227,7 +228,7 @@ export async function addCategory(name, parentId) {
 
 export async function updateCategory(id, fields) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
 
   let oldName = null;
   if (fields.name) {
@@ -288,7 +289,7 @@ export async function scanDuplicateCategoryTags() {
 
 export async function fixDuplicateCategoryTags(ids) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { data, error } = await supabase.from("products").select("id, category, categories").in("id", ids);
   if (error) throw new Error(error.message);
   for (const p of data) {
@@ -324,7 +325,7 @@ export async function scanOrphanedCategoryNames() {
 
 export async function mergeCategoryName(oldName, newName) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { data: allProducts, error: fetchErr } = await supabase.from("products").select("id, category, categories");
   if (fetchErr) throw new Error(fetchErr.message);
 
@@ -344,7 +345,7 @@ export async function mergeCategoryName(oldName, newName) {
 
 export async function removeCategory(id) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("categories").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
@@ -353,7 +354,7 @@ export async function removeCategory(id) {
 
 export async function addBrand(name) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("brands").insert({ name });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
@@ -362,7 +363,7 @@ export async function addBrand(name) {
 
 export async function updateBrand(id, fields) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
 
   let oldName = null;
   if (fields.name) {
@@ -389,7 +390,7 @@ export async function updateBrand(id, fields) {
 
 export async function removeBrand(name) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("brands").delete().eq("name", name);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");

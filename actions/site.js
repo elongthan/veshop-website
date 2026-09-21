@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { requireFullAdmin } from "@/lib/adminRole";
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -10,7 +11,7 @@ async function requireAdmin(supabase) {
 
 export async function updateSiteContent(fields) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("settings").update(fields).eq("id", 1);
   if (error) throw new Error(error.message);
   revalidatePath("/", "layout");
@@ -18,7 +19,7 @@ export async function updateSiteContent(fields) {
 
 export async function addBannerImage(url) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { data } = await supabase.from("settings").select("banner_images").eq("id", 1).single();
   const next = [...(data?.banner_images || []), url];
   const { error } = await supabase.from("settings").update({ banner_images: next }).eq("id", 1);
@@ -28,7 +29,7 @@ export async function addBannerImage(url) {
 
 export async function reorderBannerImages(orderedUrls) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { error } = await supabase.from("settings").update({ banner_images: orderedUrls }).eq("id", 1);
   if (error) throw new Error(error.message);
   revalidatePath("/");
@@ -36,7 +37,7 @@ export async function reorderBannerImages(orderedUrls) {
 
 export async function removeBannerImage(url) {
   const supabase = await createClient();
-  await requireAdmin(supabase);
+  await requireFullAdmin(supabase);
   const { data } = await supabase.from("settings").select("banner_images").eq("id", 1).single();
   const next = (data?.banner_images || []).filter((u) => u !== url);
   const { error } = await supabase.from("settings").update({ banner_images: next }).eq("id", 1);
