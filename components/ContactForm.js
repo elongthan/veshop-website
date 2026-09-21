@@ -74,6 +74,13 @@ export default function ContactForm({ contactEmail }) {
       <label className="ve-filter-label">Attachment (optional)</label>
       <input name="attachment" type="file" accept="image/*,.pdf,.doc,.docx" />
       <p className="ve-muted" style={{ fontSize: 12, marginTop: -6 }}>Max 4MB — images, PDF or Word documents.</p>
+      {/* Honeypot: hidden from real visitors via CSS, but a simple bot that
+          fills in every field will fill this one too — anything non-empty
+          here means it's not a human, and the server silently drops it. */}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+        <label htmlFor="website">Website</label>
+        <input id="website" name="website" tabIndex={-1} autoComplete="off" />
+      </div>
       {status === "error" && <div className="ve-form-error">{errorMsg}</div>}
       <button className="ve-btn ve-btn-primary" type="submit" disabled={status === "sending"}>
         {status === "sending" ? "Sending..." : "Send enquiry"}
