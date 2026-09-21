@@ -71,7 +71,13 @@ export async function createAdmin({ username, email, password, role }) {
   const { error: profileErr } = await admin
     .from("admin_profiles")
     .insert({ user_id: created.user.id, username: username.trim(), role: finalRole });
-  if (profileErr) throw new Error(profileErr.message);
+  if (profileErr) {
+    // The login was created but its profile wasn't — undo the login too,
+    // rather than leaving an orphaned account that blocks reusing this
+    // email and doesn't show up anywhere in the admin UI.
+    await admin.auth.admin.deleteUser(created.user.id);
+    throw new Error(profileErr.message);
+  }
 
   revalidatePath("/admin/users");
 }
