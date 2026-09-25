@@ -18,6 +18,7 @@ export async function generateMetadata({ params }) {
   return {
     title: product.name,
     description: product.short_description || `${product.name} — available from VeShop, Vertex Enterprise Pte Ltd.`,
+    alternates: { canonical: `https://veshop.com.sg/product/${product.id}` },
     openGraph: {
       title: product.name,
       description: product.short_description,
@@ -57,6 +58,18 @@ export default async function ProductPage({ params }) {
           }
         }
       : {})
+  };
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://veshop.com.sg/" },
+      ...(product.category
+        ? [{ "@type": "ListItem", position: 2, name: product.category, item: `https://veshop.com.sg/category/${slugify(product.category)}` }]
+        : []),
+      { "@type": "ListItem", position: product.category ? 3 : 2, name: product.name, item: `https://veshop.com.sg/product/${product.id}` }
+    ]
   };
 
   return (
@@ -168,6 +181,10 @@ export default async function ProductPage({ params }) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
     </>
   );
