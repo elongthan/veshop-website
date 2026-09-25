@@ -20,6 +20,17 @@ export default async function HomePage() {
   const others = products.filter((p) => !p.new_arrival);
   const recent = [...featured, ...others].slice(0, 8);
 
+  const localBusinessJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    name: "Vertex Enterprise Pte Ltd",
+    url: "https://veshop.com.sg",
+    telephone: settings.phone1 || undefined,
+    email: settings.contact_email || undefined,
+    address: settings.footer_address ? { "@type": "PostalAddress", streetAddress: settings.footer_address, addressCountry: "SG" } : undefined,
+    image: settings.logo_url || undefined
+  };
+
   return (
     <>
       <Header settings={settings} />
@@ -56,6 +67,10 @@ export default async function HomePage() {
         </section>
       </main>
       <Footer settings={settings} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
+      />
     </>
   );
 }
