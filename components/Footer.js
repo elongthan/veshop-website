@@ -5,7 +5,6 @@ export default function Footer({ settings }) {
   const address = settings?.footer_address || "";
   const phone1 = settings?.phone1 || "";
   const phone2 = settings?.phone2 || "";
-  const email = settings?.contact_email || "sales@veshop.com.sg";
   const waNumber = (settings?.whatsapp_number || "").replace(/[^0-9]/g, "");
   const catalogHeading = settings?.footer_catalog_heading || "Catalog";
   const catalogText = settings?.footer_catalog_text || "";
@@ -29,7 +28,7 @@ export default function Footer({ settings }) {
               phone1
             )}
             {phone2 ? <><br />{phone2}</> : null}<br />
-            {email}
+            <a className="ve-footer-contact-link" href="/contact">Send us an enquiry</a>
           </p>
         </div>
         <div>

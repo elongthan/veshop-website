@@ -5,7 +5,7 @@ import { sendContactEnquiry } from "@/actions/site";
 
 const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024; // 4MB — keeps email + serverless request size safe
 
-export default function ContactForm({ contactEmail }) {
+export default function ContactForm({ defaultMessage = "" }) {
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -37,7 +37,7 @@ export default function ContactForm({ contactEmail }) {
       const message = formData.get("message");
       const subject = encodeURIComponent(`Website enquiry from ${name}`);
       const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`);
-      window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:${result.fallbackTo}?subject=${subject}&body=${body}`;
       setStatus("idle");
       return;
     }
@@ -70,7 +70,7 @@ export default function ContactForm({ contactEmail }) {
       <label className="ve-filter-label">Phone</label>
       <input name="phone" />
       <label className="ve-filter-label">Message *</label>
-      <textarea name="message" rows={5} required />
+      <textarea name="message" rows={5} required defaultValue={defaultMessage} />
       <label className="ve-filter-label">Attachment (optional)</label>
       <input name="attachment" type="file" accept="image/*,.pdf,.doc,.docx" />
       <p className="ve-muted" style={{ fontSize: 12, marginTop: -6 }}>Max 4MB — images, PDF or Word documents.</p>
