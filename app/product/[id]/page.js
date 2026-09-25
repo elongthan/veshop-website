@@ -8,6 +8,7 @@ import { getProduct, getProducts, getSettings } from "@/lib/data";
 import { fmtPrice, slugify } from "@/lib/slug";
 import { PriceTag } from "@/components/PriceTag";
 import ProductCard from "@/components/ProductCard";
+import { MessageCircle } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -47,9 +48,12 @@ export default async function ProductPage({ params }) {
       ? {
           offers: {
             "@type": "Offer",
+            url: `https://veshop.com.sg/product/${product.id}`,
             priceCurrency: "SGD",
-            price: product.price,
-            availability: "https://schema.org/InStock"
+            price: product.sale_price != null && product.sale_price < product.price ? product.sale_price : product.price,
+            availability: product.out_of_stock
+              ? "https://schema.org/OutOfStock"
+              : "https://schema.org/InStock"
           }
         }
       : {})
@@ -130,6 +134,18 @@ export default async function ProductPage({ params }) {
               >
                 Enquire about this item
               </a>
+              {settings.whatsapp_number && (
+                <a
+                  className="ve-btn ve-whatsapp-btn"
+                  href={`https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                    `Hi, I'm interested in the ${product.name}.\nProduct ID/SKU: ${product.sku || product.id}\nProduct: https://veshop.com.sg/product/${product.id}\nCould you provide more information?`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle size={16} /> WhatsApp us
+                </a>
+              )}
               <ShareButton title={product.name} />
             </div>
           </div>
