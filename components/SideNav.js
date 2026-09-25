@@ -35,7 +35,7 @@ export default function SideNav({ open, onClose }) {
           <button onClick={onClose} aria-label="Close menu"><X size={18} /></button>
         </div>
         <div className="ve-sidenav-body">
-          <Link href="/shop" onClick={onClose} className="ve-sidenav-all">Full catalog</Link>
+          <Link href="/shop" onClick={onClose} className="ve-sidenav-all">Full catalogue</Link>
           {!tree && <p className="ve-muted" style={{ padding: "0 16px" }}>Loading...</p>}
           {tree?.map((c) => (
             <div key={c.id} className="ve-sidenav-group">

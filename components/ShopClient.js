@@ -64,7 +64,7 @@ function ShopInner({ products, categoryTree, brands, showPrices, settings }) {
     <main className="ve-shop">
       <div className="ve-shop-toolbar">
         <div>
-          <h1>Full catalog</h1>
+          <h1>Full catalogue</h1>
           <p className="ve-muted">{filtered.length} of {products.length} items</p>
         </div>
         <div className="ve-shop-toolbar-actions">
