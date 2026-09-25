@@ -72,7 +72,7 @@ export default async function TermsPage() {
         <h2>Contact us</h2>
         <p>
           Questions about these terms can be sent to{" "}
-          <a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a>.
+          our <a href="/contact">Contact Us</a> page.
         </p>
       </main>
       <Footer settings={settings} />
