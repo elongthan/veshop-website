@@ -69,7 +69,7 @@ export async function sendContactEnquiry(formData) {
   if (!apiKey) {
     // No email service configured yet — tell the caller so the page can
     // fall back to opening the visitor's own email app instead.
-    return { ok: false, fallback: true };
+    return { ok: false, fallback: true, fallbackTo: toEmail };
   }
 
   let attachments;
