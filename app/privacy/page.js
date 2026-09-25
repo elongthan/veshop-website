@@ -87,7 +87,7 @@ export default async function PrivacyPage() {
         <p>
           If you have any questions about this policy or how your personal
           data is handled, please contact us at{" "}
-          <a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a>.
+          our <a href="/contact">Contact Us</a> page.
         </p>
       </main>
       <Footer settings={settings} />
