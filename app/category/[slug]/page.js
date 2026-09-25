@@ -13,7 +13,8 @@ export async function generateMetadata({ params }) {
   if (!category) return {};
   return {
     title: category,
-    description: `Browse ${category} products from VeShop — Vertex Enterprise's hardware and safety supplies catalog in Singapore.`
+    description: `Browse ${category} products from VeShop — Vertex Enterprise's hardware and safety supplies catalog in Singapore.`,
+    alternates: { canonical: `https://veshop.com.sg/category/${params.slug}` }
   };
 }
 
@@ -27,6 +28,15 @@ export default async function CategoryPage({ params }) {
   if (!category) notFound();
 
   const items = products.filter((p) => p.categories?.includes(category));
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://veshop.com.sg/" },
+      { "@type": "ListItem", position: 2, name: category, item: `https://veshop.com.sg/category/${params.slug}` }
+    ]
+  };
 
   return (
     <>
@@ -65,6 +75,10 @@ export default async function CategoryPage({ params }) {
         )}
       </main>
       <Footer settings={settings} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
     </>
   );
 }
