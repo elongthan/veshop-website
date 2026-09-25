@@ -6,7 +6,7 @@ import { getBrands, getCategoryTree, getProducts, getSettings } from "@/lib/data
 export const dynamic = "force-dynamic";
 
 export const metadata = {
-  title: "Full catalog",
+  title: "Full catalogue",
   description: "Search and filter VeShop's full range of hardware, PPE and safety supplies by name, brand, category and price."
 };
 
