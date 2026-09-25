@@ -10,22 +10,24 @@ export const metadata = {
   description: "Get in touch with VeShop — Vertex Enterprise Pte Ltd for quotes, orders and enquiries."
 };
 
-export default async function ContactPage() {
+export default async function ContactPage({ searchParams }) {
   const settings = await getSettings();
+  const params = (await searchParams) || {};
+  const productName = typeof params.product === "string" ? params.product.slice(0, 200) : "";
+  const sku = typeof params.sku === "string" ? params.sku.slice(0, 60) : "";
+  const defaultMessage = productName
+    ? `Hi, I'd like to enquire about: ${productName}${sku ? ` (SKU: ${sku})` : ""}\n\n`
+    : "";
 
   return (
     <>
       <Header settings={settings} />
       <main className="ve-simple-page">
         <h1>Contact Us</h1>
-        <p className="ve-muted">Send us an enquiry and we'll get back to you, or reach us directly.</p>
+        <p className="ve-muted">Send us an enquiry using the form and we'll get back to you, or call or WhatsApp us directly.</p>
         <div className="ve-contact-grid">
-          <ContactForm contactEmail={settings.contact_email} />
+          <ContactForm defaultMessage={defaultMessage} />
           <div className="ve-contact-info">
-            <div>
-              <h4>Email</h4>
-              <p><a href={`mailto:${settings.contact_email}`}>{settings.contact_email}</a></p>
-            </div>
             <div>
               <h4>Phone</h4>
               <p>{settings.phone1}{settings.phone2 ? <><br />{settings.phone2}</> : null}</p>
