@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Full catalogue",
-  description: "Search and filter VeShop's full range of hardware, PPE and safety supplies by name, brand, category and price."
+  description: "Search and filter VeShop's full range of hardware, PPE and safety supplies by name, brand, category and price.",
+  alternates: { canonical: "https://veshop.com.sg/shop" }
 };
 
 export default async function ShopPage() {
