@@ -18,7 +18,7 @@ export async function generateMetadata({ params }) {
   return {
     title: product.name,
     description: product.short_description || `${product.name} — available from VeShop, Vertex Enterprise Pte Ltd.`,
-    alternates: { canonical: `https://veshop.com.sg/product/${product.id}` },
+    alternates: { canonical: `https://www.veshop.com.sg/product/${product.id}` },
     openGraph: {
       title: product.name,
       description: product.short_description,
@@ -49,7 +49,7 @@ export default async function ProductPage({ params }) {
       ? {
           offers: {
             "@type": "Offer",
-            url: `https://veshop.com.sg/product/${product.id}`,
+            url: `https://www.veshop.com.sg/product/${product.id}`,
             priceCurrency: "SGD",
             price: product.sale_price != null && product.sale_price < product.price ? product.sale_price : product.price,
             availability: product.out_of_stock
@@ -64,11 +64,11 @@ export default async function ProductPage({ params }) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://veshop.com.sg/" },
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.veshop.com.sg/" },
       ...(product.category
-        ? [{ "@type": "ListItem", position: 2, name: product.category, item: `https://veshop.com.sg/category/${slugify(product.category)}` }]
+        ? [{ "@type": "ListItem", position: 2, name: product.category, item: `https://www.veshop.com.sg/category/${slugify(product.category)}` }]
         : []),
-      { "@type": "ListItem", position: product.category ? 3 : 2, name: product.name, item: `https://veshop.com.sg/product/${product.id}` }
+      { "@type": "ListItem", position: product.category ? 3 : 2, name: product.name, item: `https://www.veshop.com.sg/product/${product.id}` }
     ]
   };
 
@@ -143,7 +143,7 @@ export default async function ProductPage({ params }) {
             <div className="ve-product-actions">
               <a
                 className="ve-btn ve-btn-primary"
-                href={`/contact?product=${encodeURIComponent(product.name)}${product.sku ? `&sku=${encodeURIComponent(product.sku)}` : ""}`}
+                href={`mailto:${settings.contact_email || "sales@veshop.com.sg"}?subject=Enquiry: ${encodeURIComponent(product.name)}`}
               >
                 Enquire about this item
               </a>
@@ -151,7 +151,7 @@ export default async function ProductPage({ params }) {
                 <a
                   className="ve-btn ve-whatsapp-btn"
                   href={`https://wa.me/${settings.whatsapp_number.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
-                    `Hi, I'm interested in the ${product.name}.\nProduct ID/SKU: ${product.sku || product.id}\nProduct: https://veshop.com.sg/product/${product.id}\nCould you provide more information?`
+                    `Hi, I'm interested in the ${product.name}.\nProduct ID/SKU: ${product.sku || product.id}\nProduct: https://www.veshop.com.sg/product/${product.id}\nCould you provide more information?`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
