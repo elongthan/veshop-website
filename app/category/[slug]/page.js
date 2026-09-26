@@ -14,7 +14,7 @@ export async function generateMetadata({ params }) {
   return {
     title: category,
     description: `Browse ${category} products from VeShop — Vertex Enterprise's hardware and safety supplies catalog in Singapore.`,
-    alternates: { canonical: `https://veshop.com.sg/category/${params.slug}` }
+    alternates: { canonical: `https://www.veshop.com.sg/category/${params.slug}` }
   };
 }
 
@@ -33,8 +33,8 @@ export default async function CategoryPage({ params }) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: "https://veshop.com.sg/" },
-      { "@type": "ListItem", position: 2, name: category, item: `https://veshop.com.sg/category/${params.slug}` }
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.veshop.com.sg/" },
+      { "@type": "ListItem", position: 2, name: category, item: `https://www.veshop.com.sg/category/${params.slug}` }
     ]
   };
 
