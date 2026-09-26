@@ -6,7 +6,7 @@ import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 export async function generateMetadata() {
   const settings = await getSettings();
   return {
-    metadataBase: new URL("https://veshop.com.sg"),
+    metadataBase: new URL("https://www.veshop.com.sg"),
     title: {
       default: "VeShop — Hardware, PPE & Safety Supplies Singapore | Vertex Enterprise",
       template: "%s | VeShop"
@@ -16,7 +16,7 @@ export async function generateMetadata() {
     openGraph: {
       title: "VeShop — Hardware, PPE & Safety Supplies Singapore",
       description: "Vertex Enterprise Pte Ltd's full product catalog — hardware, PPE, tools and more.",
-      url: "https://veshop.com.sg",
+      url: "https://www.veshop.com.sg",
       siteName: "VeShop",
       locale: "en_SG",
       type: "website",

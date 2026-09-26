@@ -24,8 +24,9 @@ export default async function HomePage() {
     "@context": "https://schema.org",
     "@type": "Store",
     name: "Vertex Enterprise Pte Ltd",
-    url: "https://veshop.com.sg",
+    url: "https://www.veshop.com.sg",
     telephone: settings.phone1 || undefined,
+    email: settings.contact_email || undefined,
     address: settings.footer_address ? { "@type": "PostalAddress", streetAddress: settings.footer_address, addressCountry: "SG" } : undefined,
     image: settings.logo_url || undefined
   };

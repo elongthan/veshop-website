@@ -12,7 +12,7 @@ export default async function robots() {
   }
 
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: "/admin/" }],
-    sitemap: "https://veshop.com.sg/sitemap.xml"
+    rules: [{ userAgent: "*", allow: "/", disallow: "/backoffice-ve80s/" }],
+    sitemap: "https://www.veshop.com.sg/sitemap.xml"
   };
 }
