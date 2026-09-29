@@ -157,10 +157,10 @@ button, input, select, textarea{ font-family:inherit; }
 
 .ve-lightbox{ position:fixed; inset:0; z-index:200; background:rgba(10,10,10,.92); display:flex; align-items:center; justify-content:center; padding:40px; cursor:zoom-out; }
 .ve-lightbox-img{ max-width:100%; max-height:100%; object-fit:contain; cursor:default; }
-.ve-lightbox-close{ position:absolute; top:16px; right:16px; background:rgba(255,255,255,.12); border:none; color:#fff; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-.ve-lightbox-close:hover{ background:rgba(255,255,255,.22); }
-.ve-lightbox-arrow{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(255,255,255,.12); border:none; color:#fff; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; }
-.ve-lightbox-arrow:hover{ background:rgba(255,255,255,.22); }
+.ve-lightbox-close{ position:absolute; top:16px; right:16px; background:rgba(20,20,18,.75); border:1px solid rgba(255,255,255,.25); color:#fff; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.4); }
+.ve-lightbox-close:hover{ background:rgba(20,20,18,.9); }
+.ve-lightbox-arrow{ position:absolute; top:50%; transform:translateY(-50%); background:rgba(20,20,18,.75); border:1px solid rgba(255,255,255,.25); color:#fff; width:46px; height:46px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 10px rgba(0,0,0,.4); }
+.ve-lightbox-arrow:hover{ background:rgba(20,20,18,.9); }
 .ve-lightbox-arrow-prev{ left:16px; }
 .ve-lightbox-arrow-next{ right:16px; }
 @media (max-width: 640px){
