@@ -105,7 +105,7 @@ export default async function ProductPage({ params }) {
             ) : (
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
             )}
-            <p className="ve-product-desc">{product.short_description}</p>
+            <p className="ve-product-desc" style={{ whiteSpace: "pre-line" }}>{product.short_description}</p>
             {product.variants?.length > 0 ? (
               <div className="ve-product-full-desc">
                 <h3>Available sizes</h3>
