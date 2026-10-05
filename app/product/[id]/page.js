@@ -141,12 +141,12 @@ export default async function ProductPage({ params }) {
               </div>
             )}
             <div className="ve-product-actions">
-              <a
+              <Link
                 className="ve-btn ve-btn-primary"
-                href={`mailto:${settings.contact_email || "sales@veshop.com.sg"}?subject=Enquiry: ${encodeURIComponent(product.name)}`}
+                href={`/contact?product=${encodeURIComponent(product.name)}${product.sku ? `&sku=${encodeURIComponent(product.sku)}` : ""}`}
               >
                 Enquire about this item
-              </a>
+              </Link>
               {settings.whatsapp_number && (
                 <a
                   className="ve-btn ve-whatsapp-btn"
