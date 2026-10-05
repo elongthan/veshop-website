@@ -110,6 +110,8 @@ button, input, select, textarea{ font-family:inherit; }
 .ve-btn-ghost:hover{ background:var(--paper); }
 .ve-icon-btn-sm{ display:flex; align-items:center; justify-content:center; width:26px; height:26px; border-radius:6px; border:1px solid var(--line); background:#fff; color:var(--muted); cursor:pointer; flex-shrink:0; }
 .ve-icon-btn-sm:hover{ color:var(--ink); background:var(--paper); }
+.ve-progress{ height:8px; background:var(--line); border-radius:6px; overflow:hidden; }
+.ve-progress > span{ display:block; height:100%; background:var(--signal); transition:width .2s ease; }
 .ve-admin-edit-table{ border-collapse:collapse; width:100%; font-size:13px; }
 .ve-admin-edit-table th,.ve-admin-edit-table td{ border:1px solid var(--line); padding:6px; text-align:left; }
 .ve-admin-edit-table th{ background:var(--paper); font-weight:600; font-size:12px; color:var(--steel); }
