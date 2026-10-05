@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { toggleShowPrices } from "@/actions/products";
+import ImageBackupPanel from "@/components/admin/ImageBackupPanel";
 
 export default function SettingsClient({ initialShowPrices }) {
   const [showPrices, setShowPrices] = useState(initialShowPrices);
@@ -43,6 +44,8 @@ export default function SettingsClient({ initialShowPrices }) {
           <span className="ve-badge ve-badge-warning"><EyeOff size={13} /> Prices are hidden</span>
         )}
       </div>
+
+      <ImageBackupPanel />
     </div>
   );
 }
