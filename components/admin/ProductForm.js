@@ -96,6 +96,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
         const path = `products/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
         const { error } = await supabase.storage.from("product-images").upload(path, blob, {
           contentType: "image/jpeg",
+          cacheControl: "31536000",
           upsert: false
         });
         if (error) throw error;
