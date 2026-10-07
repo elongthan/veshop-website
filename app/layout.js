@@ -33,6 +33,9 @@ export async function generateMetadata() {
 
 export const dynamic = "force-dynamic";
 
+const FONT_URL =
+  "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap";
+
 export default async function RootLayout({ children }) {
   const settings = await getSettings();
   const accentColor = settings?.accent_color || "#1B3A6B";
@@ -45,10 +48,11 @@ export default async function RootLayout({ children }) {
             with the connection opened early — this removes a delay before first paint. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
-        />
+        {/* The font stylesheet is added by a tiny script so it never blocks the first paint
+            (text shows in a fallback font for a moment, then switches). The noscript line is
+            the fallback for browsers with scripts off. */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var l=document.createElement("link");l.rel="stylesheet";l.href=${JSON.stringify(FONT_URL)};document.head.appendChild(l);})();` }} />
+        <noscript><link rel="stylesheet" href={FONT_URL} /></noscript>
       </head>
       <body>
         <style>{`:root{ --signal: ${accentColor}; }`}</style>
