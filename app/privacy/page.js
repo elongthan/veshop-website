@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Privacy Policy",
-  description: "How Vertex Enterprise Pte Ltd (VeShop) collects, uses and protects your personal data."
+  description: "How Vertex Enterprise Pte Ltd (VeShop) collects, uses and protects your personal data.",
+  alternates: { canonical: "https://www.veshop.com.sg/privacy" }
 };
 
 export default async function PrivacyPage() {
