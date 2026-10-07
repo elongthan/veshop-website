@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
+    // Resized banner images are safe to keep for a year (their file names never change).
+    minimumCacheTTL: 31536000,
     remotePatterns: [
-      { protocol: "https", hostname: "*.supabase.co" }
+      { protocol: "https", hostname: "*.supabase.co" }, { protocol: "http", hostname: "localhost" }
     ]
   },
   // The old site (veshop.com.sg, PrestaShop) used a completely different URL
