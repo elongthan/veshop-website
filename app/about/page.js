@@ -7,7 +7,8 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "About Us",
-  description: "About Vertex Enterprise Pte Ltd — hardware, PPE and safety supplies in Singapore."
+  description: "About Vertex Enterprise Pte Ltd — hardware, PPE and safety supplies in Singapore.",
+  alternates: { canonical: "https://www.veshop.com.sg/about" }
 };
 
 export default async function AboutPage() {
