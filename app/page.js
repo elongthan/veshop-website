@@ -46,8 +46,8 @@ export default async function HomePage() {
             <Link className="ve-link" href="/shop">View all →</Link>
           </div>
           <div className="ve-grid">
-            {recent.map((p) => (
-              <ProductCard key={p.id} product={p} showPrices={settings.show_prices} />
+            {recent.map((p, i) => (
+              <ProductCard key={p.id} product={p} showPrices={settings.show_prices} priority={i < 4} />
             ))}
           </div>
         </section>
