@@ -9,6 +9,10 @@ import { getBrandRows, getCategoryTree, getProducts, getSettings } from "@/lib/d
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  alternates: { canonical: "https://www.veshop.com.sg" }
+};
+
 export default async function HomePage() {
   const [categoryTree, products, settings, brands] = await Promise.all([
     getCategoryTree(),
