@@ -7,7 +7,10 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Contact Us",
-  description: "Get in touch with VeShop — Vertex Enterprise Pte Ltd for quotes, orders and enquiries."
+  description: "Get in touch with VeShop — Vertex Enterprise Pte Ltd for quotes, orders and enquiries.",
+  // The product enquiry links add ?product=...&sku=... to this page. They all show
+  // the same page, so tell Google the plain address is the real one.
+  alternates: { canonical: "https://www.veshop.com.sg/contact" }
 };
 
 export default async function ContactPage({ searchParams }) {
