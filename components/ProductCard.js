@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ImageOff } from "lucide-react";
 import { PriceTag } from "@/components/PriceTag";
 
-export default function ProductCard({ product, showPrices }) {
+export default function ProductCard({ product, showPrices, priority = false }) {
   const onSale = product.sale_price != null && Number(product.sale_price) < Number(product.price);
   return (
     <Link href={`/product/${product.id}`} className="ve-card">
@@ -13,7 +13,7 @@ export default function ProductCard({ product, showPrices }) {
           <span className="ve-corner-tag ve-corner-tag-sale">Sale</span>
         ) : product.new_arrival && <span className="ve-corner-tag">New</span>}
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} loading="lazy" style={product.out_of_stock ? { opacity: 0.55 } : undefined} />
+          <img src={product.image_url} alt={product.name} width={600} height={600} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} decoding="async" style={product.out_of_stock ? { opacity: 0.55 } : undefined} />
         ) : (
           <div className="ve-img-fallback"><ImageOff size={28} strokeWidth={1.4} /></div>
         )}
