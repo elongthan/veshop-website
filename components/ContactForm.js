@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { sendContactEnquiry } from "@/actions/site";
 
 const MAX_ATTACHMENT_BYTES = 4 * 1024 * 1024; // 4MB — keeps email + serverless request size safe
 
-export default function ContactForm({ defaultMessage = "" }) {
+export default function ContactForm({ defaultMessage = "", syncMessage = false, onSent }) {
+  const [msg, setMsg] = useState(defaultMessage);
+  // On the enquiry page the message is built from the list, so keep it in step with the list.
+  useEffect(() => { if (syncMessage) setMsg(defaultMessage); }, [defaultMessage, syncMessage]);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -27,6 +30,7 @@ export default function ContactForm({ defaultMessage = "" }) {
     if (result.ok) {
       setStatus("sent");
       e.target.reset();
+      if (onSent) onSent();
       return;
     }
 
@@ -70,7 +74,7 @@ export default function ContactForm({ defaultMessage = "" }) {
       <label className="ve-filter-label">Phone</label>
       <input name="phone" />
       <label className="ve-filter-label">Message *</label>
-      <textarea name="message" rows={5} required defaultValue={defaultMessage} />
+      <textarea name="message" rows={syncMessage ? 9 : 5} required value={msg} onChange={(e) => setMsg(e.target.value)} />
       <label className="ve-filter-label">Attachment (optional)</label>
       <input name="attachment" type="file" accept="image/*,.pdf,.doc,.docx" />
       <p className="ve-muted" style={{ fontSize: 12, marginTop: -6 }}>Max 4MB — images, PDF or Word documents.</p>

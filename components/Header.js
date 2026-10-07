@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Search, Menu } from "lucide-react";
 import SideNav from "./SideNav";
+import EnquiryListLink from "./EnquiryListLink";
 
 export default function Header({ settings }) {
   const router = useRouter();
@@ -39,6 +40,7 @@ export default function Header({ settings }) {
           <Link href="/">Home</Link>
           <Link href="/about">About Us</Link>
           <Link href="/contact">Contact Us</Link>
+          <EnquiryListLink />
         </nav>
         <form className="ve-search" onSubmit={onSearch}>
           <Search size={16} />
