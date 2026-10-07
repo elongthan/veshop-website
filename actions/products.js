@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { cleanText, hasUncleanText } from "@/lib/textClean";
 import { requireFullAdmin } from "@/lib/adminRole";
+import { validateBulkUpdates } from "@/lib/bulkEdit";
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -122,6 +123,41 @@ export async function scanPossiblyTruncated() {
       return text.length > 0 && !endsCleanly.test(text);
     })
     .map((p) => ({ id: p.id, name: p.name, image_url: p.image_url, snippet: (p.short_description || "").slice(-60) }));
+}
+
+// Applies a batch of price / status changes coming from the spreadsheet tool.
+// The browser sends batches of ~50; everything is re-validated here, and each
+// update is checked to have actually changed a row (an update that matches
+// nothing doesn't error on its own, it just silently does nothing).
+export async function bulkUpdateProducts(updates) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+
+  if (Array.isArray(updates) && updates.length > 200) {
+    throw new Error("Too many updates in one request (max 200).");
+  }
+  const { valid, errors } = validateBulkUpdates(updates);
+  const failed = [...errors];
+  let updated = 0;
+
+  const GROUP = 10;
+  for (let i = 0; i < valid.length; i += GROUP) {
+    const group = valid.slice(i, i + GROUP);
+    const results = await Promise.all(
+      group.map(({ id, fields }) =>
+        supabase.from("products").update(fields).eq("id", id).select("id")
+      )
+    );
+    results.forEach((res, idx) => {
+      const id = group[idx].id;
+      if (res.error) failed.push({ id, error: res.error.message });
+      else if (!res.data || res.data.length === 0) failed.push({ id, error: "Product not found or not updated" });
+      else updated++;
+    });
+  }
+
+  if (updated > 0) revalidateCatalog();
+  return { updated, failed };
 }
 
 export async function toggleProductStock(id, outOfStock) {
