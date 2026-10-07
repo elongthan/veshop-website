@@ -2,13 +2,15 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff, ArrowRightLeft, PackageX } from "lucide-react";
+import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff, ArrowRightLeft, PackageX, FileSpreadsheet } from "lucide-react";
 import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive, toggleProductStock, bulkMoveCategory } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
+import BulkEditPanel from "./BulkEditPanel";
 
 export default function ProductsClient({ products, categories, brands, watermarkLogo, role }) {
   const [showForm, setShowForm] = useState(false);
+  const [showBulk, setShowBulk] = useState(false);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
@@ -171,6 +173,10 @@ export default function ProductsClient({ products, categories, brands, watermark
     setDeletingAll(false);
   }
 
+  if (showBulk) {
+    return <BulkEditPanel products={products} shown={list} onClose={() => setShowBulk(false)} />;
+  }
+
   if (showForm) {
     return (
       <>
@@ -197,6 +203,7 @@ export default function ProductsClient({ products, categories, brands, watermark
               <AlertTriangle size={14} /> {deletingAll ? "Deleting..." : "Delete all products"}
             </button>
           )}
+          <button className="ve-btn ve-btn-ghost ve-btn-sm" onClick={() => setShowBulk(true)}><FileSpreadsheet size={14} /> Spreadsheet</button>
           <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={startAdd}><Plus size={15} /> Add item</button>
         </div>
       </div>
