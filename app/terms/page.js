@@ -6,7 +6,8 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Terms & Conditions",
-  description: "Terms of use for the Vertex Enterprise Pte Ltd (VeShop) website."
+  description: "Terms of use for the Vertex Enterprise Pte Ltd (VeShop) website.",
+  alternates: { canonical: "https://www.veshop.com.sg/terms" }
 };
 
 export default async function TermsPage() {
