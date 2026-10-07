@@ -434,3 +434,13 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
 .ve-sheet-table th, .ve-sheet-table td{ border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
 .ve-sheet-table th{ background:var(--paper); font-size:12px; color:var(--steel); position:sticky; top:0; }
 .ve-sheet-table td .ve-badge{ display:inline-flex; margin-top:4px; margin-right:4px; font-size:11.5px; padding:3px 8px; }
+
+/* 404 page */
+.ve-notfound{ text-align:center; }
+.ve-notfound-code{ font-family:'Oswald',sans-serif; font-size:72px; font-weight:700; color:var(--signal); line-height:1; margin-bottom:6px; }
+.ve-notfound .ve-muted{ max-width:520px; margin:0 auto 20px; }
+.ve-notfound-search{ display:flex; gap:8px; max-width:480px; margin:0 auto; }
+.ve-notfound-search input{ flex:1; padding:11px 14px; border:1px solid var(--line); border-radius:8px; font-family:inherit; font-size:15px; background:var(--paper); }
+.ve-notfound-cats{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:22px; }
+.ve-notfound-cats a{ padding:7px 14px; border:1px solid var(--line); border-radius:999px; font-size:13.5px; color:var(--ink); }
+.ve-notfound-cats a:hover{ border-color:var(--signal); color:var(--signal); }
