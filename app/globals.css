@@ -428,3 +428,9 @@ form.ve-settings input, form.ve-settings textarea{ margin-top:4px; }
   .ve-multi-images{ grid-template-columns:repeat(3, 1fr); }
   .ve-contact-info{ margin-top:6px; }
 }
+
+/* Spreadsheet price editor */
+.ve-sheet-table{ width:100%; border-collapse:collapse; font-size:13px; }
+.ve-sheet-table th, .ve-sheet-table td{ border:1px solid var(--line); padding:8px 10px; text-align:left; vertical-align:top; }
+.ve-sheet-table th{ background:var(--paper); font-size:12px; color:var(--steel); position:sticky; top:0; }
+.ve-sheet-table td .ve-badge{ display:inline-flex; margin-top:4px; margin-right:4px; font-size:11.5px; padding:3px 8px; }
