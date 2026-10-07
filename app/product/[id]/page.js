@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductGallery from "@/components/ProductGallery";
 import ShareButton from "@/components/ShareButton";
+import AddToEnquiryButton from "@/components/AddToEnquiryButton";
 import { getProduct, getProducts, getSettings } from "@/lib/data";
 import { fmtPrice, slugify } from "@/lib/slug";
 import { PriceTag } from "@/components/PriceTag";
@@ -159,6 +160,7 @@ export default async function ProductPage({ params }) {
                   <MessageCircle size={16} /> WhatsApp us
                 </a>
               )}
+              <AddToEnquiryButton id={product.id} name={product.name} sku={product.sku || ""} />
               <ShareButton title={product.name} />
             </div>
           </div>
