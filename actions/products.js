@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { cleanText, hasUncleanText } from "@/lib/textClean";
 import { requireFullAdmin } from "@/lib/adminRole";
 import { validateBulkUpdates } from "@/lib/bulkEdit";
+import { getProduct } from "@/lib/data";
 
 async function requireAdmin(supabase) {
   const { data: { user } } = await supabase.auth.getUser();
@@ -17,6 +18,15 @@ function revalidateCatalog() {
   revalidatePath("/category/[slug]", "page");
   revalidatePath("/product/[id]", "page");
   revalidatePath("/admin/products");
+}
+
+// Full product (description, variants...) for the edit screen. The products list only
+// carries the short version so the page stays fast.
+export async function getProductForEdit(id) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  if (typeof id !== "string" || !id || id.length > 64) throw new Error("Invalid product");
+  return await getProduct(id, { includeInactive: true });
 }
 
 export async function saveProduct(product) {
