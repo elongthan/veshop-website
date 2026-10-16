@@ -9,7 +9,10 @@ export default async function AdminProductsPage() {
 
   // The list only needs the short version of each product. The long fields (description,
   // variants) are loaded when a product is opened for editing, which keeps this page light.
-  const light = products.map(({ description, short_description, variants, variant_columns, ...rest }) => rest);
+  const light = products.map(({ description, short_description, variants, variant_columns, ...rest }) => ({
+    ...rest,
+    has_variants: Array.isArray(variants) && variants.length > 0
+  }));
 
   return (
     <ProductsClient products={light} categories={categories} brands={brands} watermarkLogo={settings.logo_url} role={role} />
