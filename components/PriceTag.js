@@ -13,7 +13,7 @@ export function PriceTag({ product, showPrices, size = "card" }) {
       <div className="ve-product-price ve-price-sale">
         <span className="ve-price-was">{fmtPrice(product.price)}</span>
         <span className="ve-price-now">{fmtPrice(product.sale_price)}</span>
-        <small>(GST incl.)</small>
+        <small>(excl. GST)</small>
       </div>
     );
   }
