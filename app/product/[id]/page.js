@@ -53,6 +53,12 @@ export default async function ProductPage({ params }) {
             url: `https://www.veshop.com.sg/product/${product.id}`,
             priceCurrency: "SGD",
             price: product.sale_price != null && product.sale_price < product.price ? product.sale_price : product.price,
+            priceSpecification: {
+              "@type": "PriceSpecification",
+              priceCurrency: "SGD",
+              price: product.sale_price != null && product.sale_price < product.price ? product.sale_price : product.price,
+              valueAddedTaxIncluded: false
+            },
             availability: product.out_of_stock
               ? "https://schema.org/OutOfStock"
               : "https://schema.org/InStock"
@@ -101,7 +107,7 @@ export default async function ProductPage({ params }) {
               product.sale_price != null && Number(product.sale_price) < Number(product.price) ? (
                 <PriceTag product={product} showPrices={true} size="detail" />
               ) : (
-                <div className="ve-product-price">{fmtPrice(product.price)} <small>(GST incl.)</small></div>
+                <div className="ve-product-price">{fmtPrice(product.price)} <small>(excl. GST)</small></div>
               )
             ) : (
               <div className="ve-product-price ve-card-price-muted">Price on request — contact us</div>
