@@ -34,7 +34,7 @@ const ProductRow = memo(function ProductRow({
         <img loading="lazy" decoding="async" width="40" height="40" src={p.image_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23EDEEE9'/%3E%3C/svg%3E"} alt="" />
         <span>
           <strong>{p.name}</strong>
-          <em>{p.sku || "no SKU"}</em>
+          <em>{p.sku || "no SKU"}{p.has_variants ? " · has option table" : ""}</em>
         </span>
       </span>
       <span>{p.brand || "—"}</span>
@@ -197,6 +197,7 @@ export default function ProductsClient({ products, categories, brands, watermark
         : statusFilter === "inactive" ? p.active === false
         : statusFilter === "out_of_stock" ? !!p.out_of_stock
         : statusFilter === "zero_price" ? (!p.price || Number(p.price) === 0)
+        : statusFilter === "has_variants" ? !!p.has_variants
         : !!p.new_arrival);
     const matchesBrand = !brandFilter || (brandFilter === "__none__" ? !p.brand : p.brand === brandFilter);
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
@@ -351,6 +352,7 @@ export default function ProductsClient({ products, categories, brands, watermark
           <option value="new_arrival">New arrival</option>
           <option value="out_of_stock">Out of stock</option>
           <option value="zero_price">$0.00 price</option>
+          <option value="has_variants">Has option table</option>
         </select>
         <select className="ve-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)} style={{ minWidth: 150 }}>
           <option value="newest">Newest first</option>
