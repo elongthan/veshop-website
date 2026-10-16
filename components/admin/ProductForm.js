@@ -197,7 +197,7 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
               <input value={form.sku} onChange={(e) => setForm((f) => ({ ...f, sku: e.target.value }))} placeholder="e.g. UN101SP0BLK" />
             </div>
             <div>
-              <label className="ve-filter-label">Price, GST included (SGD) *</label>
+              <label className="ve-filter-label">Price, before GST (SGD) *</label>
               <input
                 type="number" step="0.01" min="0" value={form.price}
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
