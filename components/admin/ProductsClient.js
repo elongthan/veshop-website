@@ -1,12 +1,104 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback, useDeferredValue, memo, startTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Pencil, Trash2, Search, AlertTriangle, Star, GripVertical, Eye, EyeOff, ArrowRightLeft, PackageX, FileSpreadsheet } from "lucide-react";
-import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive, toggleProductStock, bulkMoveCategory } from "@/actions/products";
+import { deleteProduct, deleteAllProducts, updateProductOrder, toggleProductActive, toggleProductStock, bulkMoveCategory, getProductForEdit } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 import BulkEditPanel from "./BulkEditPanel";
+
+const ProductRow = memo(function ProductRow({
+  p, index, selected, togglingActive, togglingStock, editLoading, canDrag,
+  onToggleActive, onToggleStock, onToggleSelect, onEdit, onDelete, onDragStart, onDragOver, onDrop
+}) {
+  return (
+    <div
+      className="ve-admin-row"
+                  draggable={canDrag}
+      onDragStart={() => canDrag && onDragStart(index)}
+      onDragOver={canDrag ? onDragOver : undefined}
+      onDrop={() => canDrag && onDrop(index)}
+      style={canDrag ? { cursor: "grab" } : undefined}
+    >
+      <span>
+        <input
+          type="checkbox"
+          checked={selected}
+          onChange={() => onToggleSelect(p.id)}
+          aria-label={`Select ${p.name}`}
+        />
+      </span>
+      <span className="ve-admin-item">
+        {canDrag && <GripVertical size={15} className="ve-muted" style={{ flexShrink: 0 }} />}
+        <img loading="lazy" decoding="async" width="40" height="40" src={p.image_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23EDEEE9'/%3E%3C/svg%3E"} alt="" />
+        <span>
+          <strong>{p.name}</strong>
+          <em>{p.sku || "no SKU"}</em>
+        </span>
+      </span>
+      <span>{p.brand || "—"}</span>
+      <span>{p.categories?.join(", ") || "—"}</span>
+      <span style={!p.price || Number(p.price) === 0 ? { color: "#D42020", fontWeight: 600 } : undefined}>
+        {fmtPrice(p.price)}
+      </span>
+      <span>
+        {p.sale_price != null && Number(p.sale_price) < Number(p.price)
+          ? <span className="ve-price-now" style={{ fontSize: 13.5 }}>{fmtPrice(p.sale_price)}</span>
+          : <span className="ve-muted">—</span>}
+      </span>
+      <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
+        <button
+          type="button"
+          onClick={() => onToggleActive(p)}
+          disabled={togglingActive}
+          className={`ve-badge ve-badge-toggle ${p.active !== false ? "ve-badge-success" : "ve-badge-warning"}`}
+          title={p.active !== false ? "Click to mark inactive (hides from website)" : "Click to mark active"}
+        >
+          {p.active !== false ? <Eye size={12} /> : <EyeOff size={12} />}
+          {togglingActive ? "..." : (p.active !== false ? "Active" : "Inactive")}
+        </button>
+        {p.new_arrival && (
+          <span className="ve-badge" style={{ background: "#FFF3C4", color: "#7A5A00" }} title="New arrival">
+            <Star size={11} fill="currentColor" />
+          </span>
+        )}
+        {p.out_of_stock ? (
+          <button
+            type="button"
+            onClick={() => onToggleStock(p)}
+            disabled={togglingStock}
+            className="ve-badge ve-badge-toggle"
+            style={{ background: "#FDE2E1", color: "#A3231E" }}
+            title="Click to mark back in stock"
+          >
+            <PackageX size={11} />
+            {togglingStock ? "..." : "Out of stock"}
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onToggleStock(p)}
+            disabled={togglingStock}
+            className="ve-icon-btn-sm"
+            title="Mark out of stock"
+          >
+            <PackageX size={13} />
+          </button>
+        )}
+      </span>
+      <span className="ve-muted" style={{ fontSize: 12.5 }}>
+        {p.created_at ? new Date(p.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" }) : "—"}
+      </span>
+      <span className="ve-admin-actions">
+        <button onClick={() => onEdit(p)} disabled={editLoading} aria-label="Edit"><Pencil size={15} /></button>
+        <button onClick={() => onDelete(p)} aria-label="Delete"><Trash2 size={15} /></button>
+      </span>
+    </div>
+  );
+});
+
+const PAGE_SIZE = 50;
 
 export default function ProductsClient({ products, categories, brands, watermarkLogo, role }) {
   const [showForm, setShowForm] = useState(false);
@@ -26,41 +118,58 @@ export default function ProductsClient({ products, categories, brands, watermark
   const [moving, setMoving] = useState(false);
   const dragIndexRef = useRef(null);
   const router = useRouter();
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [overrides, setOverrides] = useState({}); // instant on-screen changes while the fresh list loads
+  const [editLoadingId, setEditLoadingId] = useState(null);
+  const deferredSearch = useDeferredValue(search);
+  const listRef = useRef([]);
 
-  async function handleToggleActive(p) {
+  // Fresh data from the server replaces the temporary on-screen changes.
+  useEffect(() => { setOverrides({}); }, [products]);
+  const productsView = useMemo(
+    () => (Object.keys(overrides).length ? products.map((p) => (overrides[p.id] ? { ...p, ...overrides[p.id] } : p)) : products),
+    [products, overrides]
+  );
+
+  const handleToggleActive = useCallback(async (p) => {
     setTogglingId(p.id);
     try {
-      await toggleProductActive(p.id, p.active === false);
-      router.refresh();
+      const makeActive = p.active === false;
+      await toggleProductActive(p.id, makeActive);
+      setOverrides((o) => ({ ...o, [p.id]: { ...o[p.id], active: makeActive } }));
+      startTransition(() => router.refresh());
     } catch (err) {
       alert("Could not update status: " + err.message);
     }
     setTogglingId(null);
-  }
+  }, [router]);
 
-  async function handleToggleStock(p) {
+  const handleToggleStock = useCallback(async (p) => {
     setTogglingId(`stock-${p.id}`);
     try {
-      await toggleProductStock(p.id, !p.out_of_stock);
-      router.refresh();
+      const out = !p.out_of_stock;
+      await toggleProductStock(p.id, out);
+      setOverrides((o) => ({ ...o, [p.id]: { ...o[p.id], out_of_stock: out } }));
+      startTransition(() => router.refresh());
     } catch (err) {
       alert("Could not update stock status: " + err.message);
     }
     setTogglingId(null);
-  }
+  }, [router]);
 
   useEffect(() => {
     setDragOrder(null);
     setSelectedIds(new Set());
+    setVisibleCount(PAGE_SIZE);
   }, [search, categoryFilter, statusFilter, brandFilter, sortBy]);
 
-  function toggleSelect(id) {
+  const toggleSelect = useCallback((id) => {
     setSelectedIds((s) => {
       const next = new Set(s);
       if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
-  }
+  }, []);
 
   function toggleSelectAll(ids) {
     setSelectedIds((s) => s.size === ids.length ? new Set() : new Set(ids));
@@ -80,8 +189,8 @@ export default function ProductsClient({ products, categories, brands, watermark
     setMoving(false);
   }
 
-  const filtered = products.filter((p) => {
-    const matchesSearch = `${p.name} ${p.sku || ""} ${p.brand || ""}`.toLowerCase().includes(search.toLowerCase());
+  const filtered = useMemo(() => productsView.filter((p) => {
+    const matchesSearch = `${p.name} ${p.sku || ""} ${p.brand || ""}`.toLowerCase().includes(deferredSearch.toLowerCase());
     const matchesCategory = !categoryFilter || (p.categories || []).includes(categoryFilter);
     const matchesStatus = !statusFilter
       || (statusFilter === "active" ? p.active !== false
@@ -91,9 +200,9 @@ export default function ProductsClient({ products, categories, brands, watermark
         : !!p.new_arrival);
     const matchesBrand = !brandFilter || (brandFilter === "__none__" ? !p.brand : p.brand === brandFilter);
     return matchesSearch && matchesCategory && matchesStatus && matchesBrand;
-  });
+  }), [productsView, deferredSearch, categoryFilter, statusFilter, brandFilter]);
 
-  const sorted = sortBy === "custom" ? filtered : [...filtered].sort((a, b) => {
+  const sorted = useMemo(() => sortBy === "custom" ? filtered : [...filtered].sort((a, b) => {
     switch (sortBy) {
       case "name_asc": return a.name.localeCompare(b.name);
       case "name_desc": return b.name.localeCompare(a.name);
@@ -103,34 +212,36 @@ export default function ProductsClient({ products, categories, brands, watermark
       case "newest":
       default: return new Date(b.created_at) - new Date(a.created_at);
     }
-  });
+  }), [filtered, sortBy]);
 
   // In custom-order mode, apply any in-progress local drag reorder on top of
   // the server order (products are already fetched ordered by sort_order).
-  const list = sortBy === "custom" && dragOrder
-    ? dragOrder.map((id) => sorted.find((p) => p.id === id)).filter(Boolean)
-    : sorted;
+  const list = useMemo(() => {
+    if (sortBy === "custom" && dragOrder) {
+      const byId = new Map(sorted.map((p) => [p.id, p]));
+      return dragOrder.map((id) => byId.get(id)).filter(Boolean);
+    }
+    return sorted;
+  }, [sorted, sortBy, dragOrder]);
+  listRef.current = list;
 
   const canDrag = sortBy === "custom";
+  // Only draw the first rows; "Show more" adds more. (Drag mode needs every row on screen.)
+  const visible = canDrag ? list : list.slice(0, visibleCount);
 
-  function handleDragStart(index) {
-    dragIndexRef.current = index;
-  }
+  const handleDragStart = useCallback((index) => { dragIndexRef.current = index; }, []);
+  const handleDragOver = useCallback((e) => { e.preventDefault(); }, []);
 
-  function handleDragOver(e) {
-    e.preventDefault();
-  }
-
-  function handleDrop(index) {
+  const handleDrop = useCallback((index) => {
     const fromIndex = dragIndexRef.current;
     if (fromIndex === null || fromIndex === index) return;
-    const currentIds = list.map((p) => p.id);
+    const currentIds = listRef.current.map((p) => p.id);
     const moved = currentIds.splice(fromIndex, 1)[0];
     currentIds.splice(index, 0, moved);
     setDragOrder(currentIds);
     dragIndexRef.current = null;
     persistOrder(currentIds);
-  }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function persistOrder(orderedIds) {
     setSavingOrder(true);
@@ -144,7 +255,19 @@ export default function ProductsClient({ products, categories, brands, watermark
   }
 
   function startAdd() { setEditing(null); setShowForm(true); }
-  function startEdit(p) { setEditing(p); setShowForm(true); }
+  // The list holds only the short version of each product; the full one (description,
+  // variants) is fetched when you open it.
+  const startEdit = useCallback(async (p) => {
+    setEditLoadingId(p.id);
+    try {
+      const full = await getProductForEdit(p.id);
+      setEditing(full || p);
+      setShowForm(true);
+    } catch (err) {
+      alert("Could not open this product: " + err.message);
+    }
+    setEditLoadingId(null);
+  }, []);
 
   function handleDone() {
     setShowForm(false);
@@ -152,11 +275,11 @@ export default function ProductsClient({ products, categories, brands, watermark
     router.refresh();
   }
 
-  async function handleDelete(p) {
+  const handleDelete = useCallback(async (p) => {
     if (!confirm(`Delete "${p.name}"?`)) return;
     await deleteProduct(p.id);
     router.refresh();
-  }
+  }, [router]);
 
   async function handleDeleteAll() {
     const typed = prompt(
@@ -280,93 +403,35 @@ export default function ProductsClient({ products, categories, brands, watermark
           </span>
           <span>Item</span><span>Brand</span><span>Categories</span><span>Price</span><span>Sale price</span><span>Status</span><span>Date added</span><span></span>
         </div>
-        {list.map((p, index) => (
-          <div
-            className="ve-admin-row"
+        {visible.map((p, index) => (
+          <ProductRow
             key={p.id}
-            draggable={canDrag}
-            onDragStart={() => canDrag && handleDragStart(index)}
-            onDragOver={canDrag ? handleDragOver : undefined}
-            onDrop={() => canDrag && handleDrop(index)}
-            style={canDrag ? { cursor: "grab" } : undefined}
-          >
-            <span>
-              <input
-                type="checkbox"
-                checked={selectedIds.has(p.id)}
-                onChange={() => toggleSelect(p.id)}
-                aria-label={`Select ${p.name}`}
-              />
-            </span>
-            <span className="ve-admin-item">
-              {canDrag && <GripVertical size={15} className="ve-muted" style={{ flexShrink: 0 }} />}
-              <img src={p.image_url || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%23EDEEE9'/%3E%3C/svg%3E"} alt="" />
-              <span>
-                <strong>{p.name}</strong>
-                <em>{p.sku || "no SKU"}</em>
-              </span>
-            </span>
-            <span>{p.brand || "—"}</span>
-            <span>{p.categories?.join(", ") || "—"}</span>
-            <span style={!p.price || Number(p.price) === 0 ? { color: "#D42020", fontWeight: 600 } : undefined}>
-              {fmtPrice(p.price)}
-            </span>
-            <span>
-              {p.sale_price != null && Number(p.sale_price) < Number(p.price)
-                ? <span className="ve-price-now" style={{ fontSize: 13.5 }}>{fmtPrice(p.sale_price)}</span>
-                : <span className="ve-muted">—</span>}
-            </span>
-            <span style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 5 }}>
-              <button
-                type="button"
-                onClick={() => handleToggleActive(p)}
-                disabled={togglingId === p.id}
-                className={`ve-badge ve-badge-toggle ${p.active !== false ? "ve-badge-success" : "ve-badge-warning"}`}
-                title={p.active !== false ? "Click to mark inactive (hides from website)" : "Click to mark active"}
-              >
-                {p.active !== false ? <Eye size={12} /> : <EyeOff size={12} />}
-                {togglingId === p.id ? "..." : (p.active !== false ? "Active" : "Inactive")}
-              </button>
-              {p.new_arrival && (
-                <span className="ve-badge" style={{ background: "#FFF3C4", color: "#7A5A00" }} title="New arrival">
-                  <Star size={11} fill="currentColor" />
-                </span>
-              )}
-              {p.out_of_stock ? (
-                <button
-                  type="button"
-                  onClick={() => handleToggleStock(p)}
-                  disabled={togglingId === `stock-${p.id}`}
-                  className="ve-badge ve-badge-toggle"
-                  style={{ background: "#FDE2E1", color: "#A3231E" }}
-                  title="Click to mark back in stock"
-                >
-                  <PackageX size={11} />
-                  {togglingId === `stock-${p.id}` ? "..." : "Out of stock"}
-                </button>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => handleToggleStock(p)}
-                  disabled={togglingId === `stock-${p.id}`}
-                  className="ve-icon-btn-sm"
-                  title="Mark out of stock"
-                >
-                  <PackageX size={13} />
-                </button>
-              )}
-            </span>
-            <span className="ve-muted" style={{ fontSize: 12.5 }}>
-              {p.created_at ? new Date(p.created_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" }) : "—"}
-            </span>
-            <span className="ve-admin-actions">
-              <button onClick={() => startEdit(p)} aria-label="Edit"><Pencil size={15} /></button>
-              <button onClick={() => handleDelete(p)} aria-label="Delete"><Trash2 size={15} /></button>
-            </span>
-          </div>
+            p={p}
+            index={index}
+            selected={selectedIds.has(p.id)}
+            togglingActive={togglingId === p.id}
+            togglingStock={togglingId === `stock-${p.id}`}
+            editLoading={editLoadingId === p.id}
+            canDrag={canDrag}
+            onToggleActive={handleToggleActive}
+            onToggleStock={handleToggleStock}
+            onToggleSelect={toggleSelect}
+            onEdit={startEdit}
+            onDelete={handleDelete}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+          />
         ))}
         {list.length === 0 && <div className="ve-empty" style={{ padding: "32px 0" }}>No products found.</div>}
       </div>
+      {visible.length < list.length && (
+        <div style={{ textAlign: "center", marginTop: 14 }}>
+          <button className="ve-btn ve-btn-ghost" onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}>
+            Show {Math.min(PAGE_SIZE, list.length - visible.length)} more ({list.length - visible.length} not shown)
+          </button>
+        </div>
+      )}
     </>
   );
 }
