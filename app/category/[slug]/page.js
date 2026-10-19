@@ -18,7 +18,14 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export const dynamic = "force-dynamic";
+// Saved copy of this page, refreshed at most every 5 minutes (and straight away when
+// something is saved in admin) — avoids rebuilding the page on every visit.
+export const revalidate = 300;
+
+// No pages are built ahead of time; each one is built on its first visit, then saved.
+export async function generateStaticParams() {
+  return [];
+}
 
 export default async function CategoryPage({ params }) {
   const [categories, products, settings] = await Promise.all([
