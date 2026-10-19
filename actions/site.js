@@ -24,7 +24,7 @@ export async function addBannerImage(url) {
   const next = [...(data?.banner_images || []), url];
   const { error } = await supabase.from("settings").update({ banner_images: next }).eq("id", 1);
   if (error) throw new Error(error.message);
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 export async function reorderBannerImages(orderedUrls) {
@@ -32,7 +32,7 @@ export async function reorderBannerImages(orderedUrls) {
   await requireFullAdmin(supabase);
   const { error } = await supabase.from("settings").update({ banner_images: orderedUrls }).eq("id", 1);
   if (error) throw new Error(error.message);
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 export async function removeBannerImage(url) {
@@ -42,7 +42,7 @@ export async function removeBannerImage(url) {
   const next = (data?.banner_images || []).filter((u) => u !== url);
   const { error } = await supabase.from("settings").update({ banner_images: next }).eq("id", 1);
   if (error) throw new Error(error.message);
-  revalidatePath("/");
+  revalidatePath("/", "layout");
 }
 
 export async function sendContactEnquiry(formData) {

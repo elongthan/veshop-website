@@ -13,8 +13,8 @@ async function requireAdmin(supabase) {
 }
 
 function revalidateCatalog() {
-  revalidatePath("/");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
+  revalidatePath("/", "layout");
   revalidatePath("/category/[slug]", "page");
   revalidatePath("/product/[id]", "page");
   revalidatePath("/admin/products");
@@ -269,7 +269,7 @@ export async function addCategory(name, parentId) {
   const { error } = await supabase.from("categories").insert({ name, parent_id: parentId || null });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
 }
 
 export async function updateCategory(id, fields) {
@@ -303,8 +303,8 @@ export async function updateCategory(id, fields) {
 
   revalidatePath("/admin/taxonomy");
   revalidatePath("/admin/products");
-  revalidatePath("/shop");
-  revalidatePath("/");
+  revalidatePath("/", "layout");
+  revalidatePath("/", "layout");
 }
 
 export async function bulkMoveCategory(ids, fromCategory, toCategory) {
@@ -395,7 +395,7 @@ export async function removeCategory(id) {
   const { error } = await supabase.from("categories").delete().eq("id", id);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
 }
 
 export async function addBrand(name) {
@@ -404,7 +404,7 @@ export async function addBrand(name) {
   const { error } = await supabase.from("brands").insert({ name });
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
 }
 
 export async function updateBrand(id, fields) {
@@ -430,8 +430,8 @@ export async function updateBrand(id, fields) {
 
   revalidatePath("/admin/taxonomy");
   revalidatePath("/admin/products");
-  revalidatePath("/");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
+  revalidatePath("/", "layout");
 }
 
 export async function removeBrand(name) {
@@ -440,5 +440,5 @@ export async function removeBrand(name) {
   const { error } = await supabase.from("brands").delete().eq("name", name);
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
 }

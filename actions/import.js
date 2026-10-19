@@ -131,8 +131,8 @@ export async function importProduct(item, opts = {}) {
   const { error } = await supabase.from("products").insert(payload);
   if (error) return { ok: false, name: item.name, error: error.message };
 
-  revalidatePath("/");
-  revalidatePath("/shop");
+  revalidatePath("/", "layout");
+  revalidatePath("/", "layout");
   revalidatePath("/admin/products");
   return { ok: true, name: item.name };
 }
