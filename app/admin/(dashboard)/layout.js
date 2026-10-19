@@ -1,14 +1,7 @@
-import AdminSidebar from "@/components/AdminSidebar";
-import { getMyRole } from "@/actions/adminUsers";
+// Admin pages are always built fresh and never use saved copies of data.
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
 
-export const metadata = { robots: { index: false, follow: false } };
-
-export default async function AdminLayout({ children }) {
-  const role = await getMyRole();
-  return (
-    <div className="ve-admin">
-      <AdminSidebar role={role} />
-      <div className="ve-admin-content">{children}</div>
-    </div>
-  );
+export default function AdminRootLayout({ children }) {
+  return children;
 }
