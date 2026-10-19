@@ -1,7 +1,7 @@
 import { getCategories, getProducts } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export default async function sitemap() {
   const base = "https://www.veshop.com.sg";

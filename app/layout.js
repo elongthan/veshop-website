@@ -31,7 +31,6 @@ export async function generateMetadata() {
   };
 }
 
-export const dynamic = "force-dynamic";
 
 const FONT_URL =
   "https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap";

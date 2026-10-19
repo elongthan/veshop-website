@@ -4,7 +4,9 @@ import Footer from "@/components/Footer";
 import { getSettings, getCategoryTree } from "@/lib/data";
 import { slugify } from "@/lib/slug";
 
-export const dynamic = "force-dynamic";
+// Saved copy of this page, refreshed at most every 5 minutes (and straight away when
+// something is saved in admin) — avoids rebuilding the page on every visit.
+export const revalidate = 300;
 
 export const metadata = {
   title: "Page not found",

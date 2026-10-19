@@ -7,7 +7,9 @@ import CategoryGrid from "@/components/CategoryGrid";
 import BrandTicker from "@/components/BrandTicker";
 import { getBrandRows, getCategoryTree, getProducts, getSettings } from "@/lib/data";
 
-export const dynamic = "force-dynamic";
+// Saved copy of this page, refreshed at most every 5 minutes (and straight away when
+// something is saved in admin) — avoids rebuilding the page on every visit.
+export const revalidate = 300;
 
 export const metadata = {
   alternates: { canonical: "https://www.veshop.com.sg" }
