@@ -8,6 +8,10 @@ import { fmtPrice } from "@/lib/slug";
 import ProductForm from "./ProductForm";
 import BulkEditPanel from "./BulkEditPanel";
 
+function fmtShortDate(d) {
+  return new Date(d).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" });
+}
+
 const ProductRow = memo(function ProductRow({
   p, index, selected, togglingActive, togglingStock, editLoading, canDrag,
   onToggleActive, onToggleStock, onToggleSelect, onEdit, onDelete, onDragStart, onDragOver, onDrop
@@ -39,8 +43,16 @@ const ProductRow = memo(function ProductRow({
       </span>
       <span>{p.brand || "—"}</span>
       <span>{p.categories?.join(", ") || "—"}</span>
-      <span style={!p.price || Number(p.price) === 0 ? { color: "#D42020", fontWeight: 600 } : undefined}>
-        {fmtPrice(p.price)}
+      <span>
+        <span style={!p.price || Number(p.price) === 0 ? { color: "#D42020", fontWeight: 600 } : undefined}>
+          {fmtPrice(p.price)}
+        </span>
+        {p.price_updated_at && (
+          <small className="ve-muted" style={{ display: "block", fontSize: 11.5, lineHeight: 1.35, marginTop: 2 }}>
+            {p.previous_price != null && <>was {fmtPrice(p.previous_price)} · </>}
+            {fmtShortDate(p.price_updated_at)}
+          </small>
+        )}
       </span>
       <span>
         {p.sale_price != null && Number(p.sale_price) < Number(p.price)
@@ -209,6 +221,7 @@ export default function ProductsClient({ products, categories, brands, watermark
       case "name_desc": return b.name.localeCompare(a.name);
       case "price_asc": return (a.price || 0) - (b.price || 0);
       case "price_desc": return (b.price || 0) - (a.price || 0);
+      case "price_changed": return (b.price_updated_at ? new Date(b.price_updated_at) : 0) - (a.price_updated_at ? new Date(a.price_updated_at) : 0);
       case "oldest": return new Date(a.created_at) - new Date(b.created_at);
       case "newest":
       default: return new Date(b.created_at) - new Date(a.created_at);
@@ -361,6 +374,7 @@ export default function ProductsClient({ products, categories, brands, watermark
           <option value="name_desc">Name Z–A</option>
           <option value="price_asc">Price low–high</option>
           <option value="price_desc">Price high–low</option>
+          <option value="price_changed">Price changed recently</option>
           <option value="custom">Custom order (drag to reorder)</option>
         </select>
       </div>

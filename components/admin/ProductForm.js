@@ -203,6 +203,12 @@ export default function ProductForm({ product, categories, brands, watermarkLogo
                 onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))}
                 placeholder="0.00" required
               />
+              {product?.price_updated_at && (
+                <small className="ve-muted" style={{ display: "block", marginTop: 4 }}>
+                  Price last changed {new Date(product.price_updated_at).toLocaleDateString("en-SG", { day: "numeric", month: "short", year: "numeric" })}
+                  {product.previous_price != null && <> — was SGD {Number(product.previous_price).toFixed(2)}</>}
+                </small>
+              )}
             </div>
           </div>
 
