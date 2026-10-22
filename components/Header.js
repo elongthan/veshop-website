@@ -94,6 +94,7 @@ export default function Header({ settings }) {
           <Link href="/">Home</Link>
           <Link href="/about">About Us</Link>
           <Link href="/contact">Contact Us</Link>
+          <Link href="/testimonials">Reviews</Link>
           <EnquiryListLink />
         </nav>
         <form className="ve-search" onSubmit={onSearch} ref={boxRef} role="search">

@@ -39,7 +39,7 @@ export default function Footer({ settings }) {
       <div className="ve-footer-bottom">
         <span>{copyright} {new Date().getFullYear()}</span>
         <span className="ve-footer-legal-links">
-          <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms &amp; Conditions</a>
+          <a href="/testimonials">Customer Reviews</a> · <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms &amp; Conditions</a>
         </span>
       </div>
     </footer>
