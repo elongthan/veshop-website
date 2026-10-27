@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, Trash2, CheckCircle2, Sparkles } from "lucide-react";
-import { findDuplicateProducts, deleteProducts, scanUncleanText, fixUncleanText, scanPossiblyTruncated } from "@/actions/products";
+import { findDuplicateProducts, deleteProducts, scanUncleanText, fixUncleanText, scanPossiblyTruncated, scanRepeatedText, fixRepeatedText } from "@/actions/products";
 import { fmtPrice } from "@/lib/slug";
 
 export default function DuplicatesClient() {
@@ -15,6 +15,10 @@ export default function DuplicatesClient() {
   const [textFixing, setTextFixing] = useState(false);
   const [truncated, setTruncated] = useState(null);
   const [truncScanning, setTruncScanning] = useState(false);
+  const [repeated, setRepeated] = useState(null);
+  const [repScanning, setRepScanning] = useState(false);
+  const [repFixing, setRepFixing] = useState(false);
+  const [repMessage, setRepMessage] = useState("");
   const router = useRouter();
 
   async function scan() {
@@ -64,6 +68,32 @@ export default function DuplicatesClient() {
     const result = await scanPossiblyTruncated();
     setTruncated(result);
     setTruncScanning(false);
+  }
+
+  async function scanRepeated() {
+    setRepScanning(true);
+    setRepMessage("");
+    try {
+      setRepeated(await scanRepeatedText());
+    } catch (err) {
+      alert("Could not scan: " + err.message);
+    }
+    setRepScanning(false);
+  }
+
+  async function fixRepeated() {
+    if (!repeated?.fixable.length) return;
+    if (!confirm(`Remove the repeated text from ${repeated.fixable.length} product description(s)? Only descriptions are changed.`)) return;
+    setRepFixing(true);
+    try {
+      const n = await fixRepeatedText(repeated.fixable.map((p) => p.id));
+      setRepeated((r) => ({ ...r, fixable: [] }));
+      setRepMessage(`Done — cleaned ${n} product description(s).`);
+      router.refresh();
+    } catch (err) {
+      alert("Could not clean up: " + err.message);
+    }
+    setRepFixing(false);
   }
 
   const totalExtra = groups?.reduce((n, g) => n + (g.length - 1), 0) || 0;
@@ -151,6 +181,77 @@ export default function DuplicatesClient() {
               <span className="ve-admin-item">
                 <img src={p.image_url || ""} alt="" />
                 <span><strong>{p.name}</strong></span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="ve-admin-head" style={{ marginTop: 34, paddingTop: 24, borderTop: "1px solid var(--line)" }}>
+        <h2>Repeated text in descriptions</h2>
+      </div>
+      <p className="ve-muted" style={{ marginBottom: 14 }}>
+        Finds description bullets where the same words are written twice in a row (for example
+        "LightweightLightweight"), or the same line appears twice. Cleaning keeps one copy and changes only
+        the Description field. Lines where two <em>different</em> wordings are joined together are listed
+        separately, because they need a person to choose the right one.
+      </p>
+
+      <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+        <button className="ve-btn ve-btn-primary ve-btn-sm" onClick={scanRepeated} disabled={repScanning}>
+          <Search size={15} /> {repScanning ? "Scanning..." : "Scan all products"}
+        </button>
+        {repeated?.fixable.length > 0 && (
+          <button className="ve-btn ve-btn-ghost ve-btn-sm" onClick={fixRepeated} disabled={repFixing}>
+            <Sparkles size={15} /> {repFixing ? "Cleaning..." : `Clean up all ${repeated.fixable.length}`}
+          </button>
+        )}
+      </div>
+
+      {repMessage && <p style={{ marginBottom: 14, fontWeight: 600 }}>{repMessage}</p>}
+
+      {repeated && repeated.fixable.length === 0 && !repMessage && (
+        <div className="ve-empty" style={{ padding: "30px 0" }}>
+          <CheckCircle2 size={28} strokeWidth={1.3} />
+          <p>No repeated text found.</p>
+        </div>
+      )}
+
+      {repeated?.fixable.length > 0 && (
+        <div className="ve-dup-group">
+          <div className="ve-dup-group-label">{repeated.fixable.length} product(s) will be cleaned</div>
+          {repeated.fixable.map((p) => (
+            <div key={p.id} className="ve-admin-row" style={{ gridTemplateColumns: "1fr" }}>
+              <span className="ve-admin-item">
+                <img src={p.image_url || ""} alt="" />
+                <span>
+                  <strong>{p.name}</strong>
+                  {p.examples.map((ex, i) => (
+                    <em key={i} style={{ display: "block" }}>"{ex.from}" → "{ex.to}"</em>
+                  ))}
+                  {p.count > p.examples.length && <em style={{ display: "block" }}>{p.count} fixes in total</em>}
+                </span>
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {repeated?.check.length > 0 && (
+        <div className="ve-dup-group" style={{ marginTop: 16 }}>
+          <div className="ve-dup-group-label">
+            {repeated.check.length} product(s) to check by hand — two wordings may be joined together
+          </div>
+          {repeated.check.map((p) => (
+            <div key={p.id} className="ve-admin-row" style={{ gridTemplateColumns: "1fr" }}>
+              <span className="ve-admin-item">
+                <img src={p.image_url || ""} alt="" />
+                <span>
+                  <strong>{p.name}</strong>
+                  {p.lines.map((l, i) => (
+                    <em key={i} style={{ display: "block" }}>"{l}"</em>
+                  ))}
+                </span>
               </span>
             </div>
           ))}
