@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
-import { cleanText, hasUncleanText } from "@/lib/textClean";
+import { cleanText, hasUncleanText, analyzeDescription } from "@/lib/textClean";
 import { requireFullAdmin } from "@/lib/adminRole";
 import { validateBulkUpdates } from "@/lib/bulkEdit";
 import { getProduct } from "@/lib/data";
@@ -441,4 +441,61 @@ export async function removeBrand(name) {
   if (error) throw new Error(error.message);
   revalidatePath("/admin/taxonomy");
   revalidatePath("/", "layout");
+}
+
+// Finds product descriptions where a bullet's text is written twice in a row
+// ("LightweightLightweight") or the same line appears twice. Nothing is saved here.
+export async function scanRepeatedText() {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, name, description, image_url")
+    .not("description", "is", null)
+    .order("name", { ascending: true });
+  if (error) throw new Error(error.message);
+
+  const fixable = [];
+  const check = [];
+  for (const p of data) {
+    const a = analyzeDescription(p.description);
+    if (a.changes.length || a.removedDuplicateLines) {
+      fixable.push({
+        id: p.id, name: p.name, image_url: p.image_url,
+        count: a.changes.length + a.removedDuplicateLines,
+        examples: a.changes.slice(0, 2).map((c) => ({ from: c.from.slice(0, 120), to: c.to.slice(0, 120) }))
+      });
+    }
+    if (a.check.length) {
+      check.push({ id: p.id, name: p.name, image_url: p.image_url, lines: a.check.slice(0, 3).map((l) => l.slice(0, 120)) });
+    }
+  }
+  return { fixable, check };
+}
+
+// Applies the same clean-up and saves it. Only the description is changed.
+export async function fixRepeatedText(ids) {
+  const supabase = await createClient();
+  await requireAdmin(supabase);
+  if (!Array.isArray(ids) || ids.length === 0 || ids.length > 2000) throw new Error("Nothing to fix");
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, description")
+    .in("id", ids);
+  if (error) throw new Error(error.message);
+
+  const todo = data
+    .map((p) => ({ id: p.id, next: analyzeDescription(p.description).text, prev: p.description }))
+    .filter((p) => p.next !== p.prev);
+
+  let fixed = 0;
+  for (let i = 0; i < todo.length; i += 10) {
+    await Promise.all(todo.slice(i, i + 10).map(async (p) => {
+      const { error: updateError } = await supabase.from("products").update({ description: p.next }).eq("id", p.id);
+      if (updateError) throw new Error(updateError.message);
+      fixed++;
+    }));
+  }
+  if (fixed > 0) revalidateCatalog();
+  return fixed;
 }
