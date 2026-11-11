@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import ProductGallery from "@/components/ProductGallery";
 import ShareButton from "@/components/ShareButton";
 import AddToEnquiryButton from "@/components/AddToEnquiryButton";
-import { getProduct, getProducts, getSettings } from "@/lib/data";
+import { getProduct, getRelatedProducts, getSettings } from "@/lib/data";
 import { fmtPrice, slugify } from "@/lib/slug";
 import { PriceTag } from "@/components/PriceTag";
 import ProductCard from "@/components/ProductCard";
@@ -36,14 +36,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const [product, settings, allProducts] = await Promise.all([
-    getProduct(params.id), getSettings(), getProducts()
-  ]);
+  const [product, settings] = await Promise.all([getProduct(params.id), getSettings()]);
   if (!product) notFound();
 
-  const related = allProducts
-    .filter((p) => p.id !== product.id && p.categories?.some((c) => product.categories?.includes(c)))
-    .slice(0, 10);
+  const related = await getRelatedProducts(product, 10);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -157,6 +153,7 @@ export default async function ProductPage({ params }) {
             <div className="ve-product-actions">
               <Link
                 className="ve-btn ve-btn-primary"
+                rel="nofollow"
                 href={`/contact?product=${encodeURIComponent(product.name)}${product.sku ? `&sku=${encodeURIComponent(product.sku)}` : ""}`}
               >
                 Enquire about this item
