@@ -12,7 +12,9 @@ export default async function robots() {
   }
 
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: "/admin/" }],
+    // "/contact?" are the per-product enquiry links (/contact?product=...): they all show the
+    // same page, so crawlers don't need to visit each one.
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin/", "/contact?"] }],
     sitemap: "https://www.veshop.com.sg/sitemap.xml"
   };
 }
